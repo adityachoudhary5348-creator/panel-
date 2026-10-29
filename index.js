@@ -8,26 +8,18 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 function getDeviceInfo(userAgent) {
-    let device = "Android Device";
+    let device = "TECNO KN3";
     let os = "Android";
-    let code = "and99jp7697olnld";
+    let code = "6e4aa6b19f29d74e";
     
     if (/iphone/i.test(userAgent)) {
-        device = "iPhone 11 Pro Max";
+        device = "IPHONE 11 PRO MAX";
         os = "iOS";
         code = "2zd29jp7697olnld";
-    } else if (/ipad/i.test(userAgent)) {
-        device = "iPad";
-        os = "iOS";
-        code = "ipad29jp7697olnld";
     } else if (/windows/i.test(userAgent)) {
-        device = "Windows PC";
+        device = "WINDOWS PC";
         os = "Windows";
         code = "win29jp7697olnld";
-    } else if (/macintosh/i.test(userAgent)) {
-        device = "Macbook / Mac";
-        os = "MacOS";
-        code = "mac29jp7697olnld";
     }
     return { device, os, code };
 }
@@ -309,7 +301,7 @@ app.get('/', (req, res) => {
         <div class="card">
             <div style="font-size: 0.65rem; color: var(--text-muted); letter-spacing: 1px;">■ ACCESS KEY</div>
             <div class="input-box-wrapper">
-                <input type="text" id="keyInput" placeholder="DRAKE-XXXX-XXXX-XXXX" value="DRAKE-E9E0-1A89-A3E7">
+                <input type="text" id="keyInput" placeholder="DRAKE-XXXX-XXXX-XXXX" value="DRAKE-82A6-D0C5-D56E">
                 <button class="btn-paste" onclick="navigator.clipboard.readText().then(t => document.getElementById('keyInput').value = t)">PASTE</button>
             </div>
             <div id="errorMsg">Invalid Key! Please use a valid key format.</div>
@@ -334,12 +326,12 @@ app.get('/', (req, res) => {
     <div id="home" class="content-section">
         <div style="display: flex; justify-content: space-between; align-items: center; color: var(--text-muted); font-size: 0.65rem; margin-bottom: 15px; letter-spacing: 0.5px;">
             <div style="background: #1c1c1c; padding: 4px 8px; border-radius: 3px; border: 1px solid #333;">■ OFFLINE</div>
-            <div>LAST REFRESHED 45 MIN AGO</div>
+            <div>LAST REFRESHED 10 MIN AGO</div>
         </div>
 
         <div style="text-align: center; padding: 10px 0 25px 0;">
             <div class="skull-img" style="width: 90px; height: 90px; font-size: 45px; margin-bottom: 10px;">💀</div>
-            <div id="timeDisplay" style="font-size: 2rem; font-weight: 900; letter-spacing: 2px;">2H 11M</div>
+            <div id="timeDisplay" style="font-size: 2rem; font-weight: 900; letter-spacing: 2px;">1D 23H</div>
             <div style="font-size: 0.6rem; color: var(--text-muted); letter-spacing: 2px; margin-top: 2px;">TIME LEFT</div>
         </div>
 
@@ -353,11 +345,11 @@ app.get('/', (req, res) => {
         <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 12px;">
             <div class="card" style="margin: 0; padding: 12px 8px; text-align: center;">
                 <div style="font-size: 0.55rem; color: var(--text-muted); letter-spacing: 0.5px;">ACTIVATED</div>
-                <div style="font-size: 0.7rem; font-weight: bold; margin-top: 4px;">29 Oct 2026</div>
+                <div style="font-size: 0.7rem; font-weight: bold; margin-top: 4px;">26 Oct 2026</div>
             </div>
             <div class="card" style="margin: 0; padding: 12px 8px; text-align: center;">
                 <div style="font-size: 0.55rem; color: var(--text-muted); letter-spacing: 0.5px;">EXPIRES</div>
-                <div style="font-size: 0.7rem; font-weight: bold; margin-top: 4px;">30 Oct 2026</div>
+                <div style="font-size: 0.7rem; font-weight: bold; margin-top: 4px;">29 Oct 2026</div>
             </div>
             <div class="card" style="margin: 0; padding: 12px 8px; text-align: center;">
                 <div style="font-size: 0.55rem; color: var(--text-muted); letter-spacing: 0.5px;">DEVICE</div>
@@ -376,7 +368,10 @@ app.get('/', (req, res) => {
 
     <!-- 3. FEATURES TAB -->
     <div id="features" class="content-section">
-        <div style="font-size: 0.65rem; color: var(--text-muted); margin-bottom: 15px; letter-spacing: 0.5px;">changes apply from your next match</div>
+        <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.65rem; color: var(--text-muted); margin-bottom: 15px; letter-spacing: 0.5px;">
+            <span>changes apply from your next match</span>
+            <span style="font-weight: bold; color: #fff;">3/5</span>
+        </div>
 
         <div class="card">
             <div class="feature-row">
@@ -409,9 +404,31 @@ app.get('/', (req, res) => {
             </div>
             <div style="display:flex; justify-content:space-between; align-items:center; margin-top:15px; font-size: 0.75rem;">
                 <span style="color:var(--text-muted); font-size:0.6rem; letter-spacing:1px;">AIM HEIGHT</span>
-                <span style="color:#ff4d4d; font-weight:900; font-size:1.1rem; letter-spacing:1px;">100%</span>
+                <div>
+                    <span style="color:var(--text-muted); font-size:0.65rem; margin-right:5px; letter-spacing:0.5px;">NECK</span>
+                    <span style="color:#ff4d4d; font-weight:900; font-size:1.1rem; letter-spacing:1px;">80%</span>
+                </div>
             </div>
-            <input type="range" min="0" max="100" value="100" style="width:100%; margin-top:10px; accent-color:#fff;">
+            <input type="range" min="0" max="100" value="80" style="width:100%; margin-top:10px; accent-color:#fff;">
+            
+            <div style="margin-top: 15px; border-top: 1px solid #222; padding-top: 15px;">
+                <div style="display:flex; justify-content:space-between; font-size:0.7rem; color:#888; margin-bottom:5px;">
+                    <span>HEAD</span><span style="color:#444;">100%</span>
+                </div>
+                <div style="display:flex; justify-content:space-between; font-size:0.7rem; color:#ff4d4d; font-weight:bold; margin-bottom:5px;">
+                    <span>NECK</span><span>68%</span>
+                </div>
+                <div style="display:flex; justify-content:space-between; font-size:0.7rem; color:#888; margin-bottom:5px;">
+                    <span>SHOULDERS</span><span style="color:#444;">50%</span>
+                </div>
+                <div style="display:flex; justify-content:space-between; font-size:0.7rem; color:#888; margin-bottom:5px;">
+                    <span>UPPER CHEST</span><span style="color:#444;">30%</span>
+                </div>
+                <div style="display:flex; justify-content:space-between; font-size:0.7rem; color:#888;">
+                    <span>CHEST</span><span style="color:#444;">0%</span>
+                </div>
+            </div>
+            <div style="color: #ff4d4d; font-size: 0.65rem; margin-top: 12px; letter-spacing: 0.5px;">! may show damage that doesn't count on standing targets</div>
         </div>
 
         <div class="card">
@@ -422,7 +439,8 @@ app.get('/', (req, res) => {
                 </div>
                 <label class="switch"><input type="checkbox"><span class="slider"></span></label>
             </div>
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:12px; background:#0a0a0a; padding:10px 14px; border-radius:4px; border:1px solid #222;">
+            <div style="font-size: 0.65rem; color: var(--text-muted); margin: 12px 0 6px 0; letter-spacing: 0.5px;">🔒 TURN ON TO CHANGE</div>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px; background:#0a0a0a; padding:10px 14px; border-radius:4px; border:1px solid #222;">
                 <span style="font-size:0.7rem; color:var(--text-muted);">when firing</span>
                 <label class="switch" style="width:36px; height:20px;"><input type="checkbox" checked><span class="slider"></span></label>
             </div>
@@ -438,14 +456,15 @@ app.get('/', (req, res) => {
                     <div class="feature-title">04 GLOO WALL ROTATION</div>
                     <div class="feature-desc">turns your gloo wall to the angle you set.</div>
                 </div>
-                <label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
+                <label class="switch"><input type="checkbox"><span class="slider"></span></label>
             </div>
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:15px;">
+            <div style="font-size: 0.65rem; color: var(--text-muted); margin: 12px 0 6px 0; letter-spacing: 0.5px;">🔒 TURN ON TO CHANGE</div>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px;">
                 <span style="color:var(--text-muted); font-size:0.6rem; letter-spacing:1px;">WALL ANGLE</span>
                 <span style="color:#fff; font-weight:900; font-size:1.1rem;">180°</span>
             </div>
-            <input type="range" min="-90" max="180" value="180" style="width:100%; margin-top:10px; accent-color:#fff;">
-            <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:6px; margin-top:12px;">
+            <input type="range" min="-90" max="180" value="180" style="width:100%; margin-top:8px; accent-color:#fff;">
+            <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:6px; margin-top:10px;">
                 <div class="style-btn">-90°</div>
                 <div class="style-btn">0°</div>
                 <div class="style-btn">+90°</div>
@@ -474,9 +493,7 @@ app.get('/', (req, res) => {
             <div style="font-size: 1.15rem; font-weight: 900; margin: 4px 0; letter-spacing: 1px;">${info.device}</div>
             <div style="font-size: 0.65rem; color: var(--text-muted);">${info.os}</div>
             <div style="font-size: 0.6rem; color: #444; font-family: monospace; margin-top: 4px;">${info.code}</div>
-            <div style="margin-top: 15px; background: #0a0a0a; padding: 10px; border-radius: 4px; text-align: center; font-size: 0.65rem; color: var(--text-muted); border: 1px solid #222; letter-spacing: 1px;">
-                NEXT RESET 5 NOV 2026
-            </div>
+            <button style="width:100%; background:#1c1c1c; color:#fff; border:1px solid #333; padding:12px; border-radius:4px; font-weight:bold; font-size:0.75rem; letter-spacing:1px; margin-top:15px; cursor:pointer;">RESET DEVICE</button>
         </div>
 
         <div class="card">
@@ -507,6 +524,8 @@ app.get('/', (req, res) => {
             </div>
             <span style="color: var(--text-muted);">↗</span>
         </div>
+
+        <button onclick="logoutSession()" style="width:100%; background:rgba(255, 77, 77, 0.1); color:#ff4d4d; border:1px solid rgba(255, 77, 77, 0.3); padding:14px; border-radius:4px; font-weight:900; font-size:0.8rem; letter-spacing:2px; margin-top:10px; cursor:pointer;">🚪 LOG OUT</button>
     </div>
 
     <!-- NAVIGATION -->
@@ -543,21 +562,18 @@ app.get('/', (req, res) => {
                 document.getElementById('login-screen').classList.remove('active');
                 document.getElementById('bottomNav').style.display = 'flex';
                 document.getElementById('displayKeyText').innerText = key;
-                
-                // Dynamic time assignment based on key pattern or default
-                if(key.includes('1H')) {
-                    document.getElementById('timeDisplay').innerText = '1H 00M';
-                } else if(key.includes('3H')) {
-                    document.getElementById('timeDisplay').innerText = '3H 00M';
-                } else {
-                    document.getElementById('timeDisplay').innerText = '2H 11M';
-                }
-                
                 switchTab('home');
             } else {
                 err.style.display = 'block';
-                err.innerText = 'Invalid Key! Key must start with DRAKE-';
+                err.innerText = 'Invalid Key! Please use a valid key format.';
             }
+        }
+
+        function logoutSession() {
+            document.getElementById('bottomNav').style.display = 'none';
+            document.querySelectorAll('.content-section').forEach(el => el.classList.remove('active'));
+            document.getElementById('login-screen').classList.add('active');
+            document.getElementById('keyInput').value = '';
         }
 
         function openVpnApp(e) {
