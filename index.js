@@ -62,13 +62,9 @@ const htmlPage = `<!DOCTYPE html>
         .top-bar h1 { font-size: 16px; letter-spacing: 2px; }
         .top-actions { display: flex; gap: 8px; align-items: center; }
         .icon-btn { background: var(--card-bg); border: 1px solid var(--border-color); color: var(--text-main); padding: 5px 10px; font-size: 11px; cursor: pointer; border-radius: 4px; text-decoration: none; }
-        
-        /* Fixed scrolling issue here */
         .content { flex: 1; padding: 15px; padding-bottom: 100px; overflow-y: scroll; -webkit-overflow-scrolling: touch; }
-        
         .screen { display: none; }
         .screen.active { display: block; }
-        
         .login-container { text-align: center; margin-top: 20px; }
         .skull-logo { width: 110px; margin-bottom: 15px; filter: drop-shadow(0 0 10px rgba(255,255,255,0.3)); }
         .login-container h2 { font-size: 24px; letter-spacing: 3px; margin-bottom: 5px; }
@@ -78,7 +74,6 @@ const htmlPage = `<!DOCTYPE html>
         .input-row { display: flex; justify-content: space-between; align-items: center; }
         .input-row input { background: transparent; border: none; color: var(--text-main); font-size: 13px; outline: none; width: 70%; letter-spacing: 1px; }
         .action-btn { width: 100%; background: var(--text-main); color: var(--bg-color); border: none; padding: 14px; font-weight: bold; font-size: 13px; letter-spacing: 2px; cursor: pointer; margin-top: 10px; clip-path: polygon(0 0, 96% 0, 100% 25%, 100% 100%, 4% 100%, 0 75%); }
-        
         .status-row { display: flex; justify-content: space-between; font-size: 9px; color: var(--text-muted); margin-bottom: 10px; letter-spacing: 1px; }
         .timer-section { text-align: center; position: relative; margin: 10px 0 20px 0; }
         .timer-skull { width: 90px; margin-bottom: 10px; filter: drop-shadow(0 0 8px rgba(255,255,255,0.4)); }
@@ -95,35 +90,29 @@ const htmlPage = `<!DOCTYPE html>
         .sub-box h3 { font-size: 11px; letter-spacing: 1px; margin-bottom: 2px; }
         .sub-box p { font-size: 8px; color: var(--text-muted); }
         .add-btn { background: #dcdcdc; border: none; color: #000; width: 32px; height: 32px; font-size: 18px; font-weight: bold; display: flex; align-items: center; justify-content: center; cursor: pointer; }
-
         .features-top-note { display: flex; justify-content: space-between; font-size: 9px; color: var(--text-muted); margin-bottom: 12px; letter-spacing: 0.5px; }
         .feature-card { background: var(--card-bg); border: 1px solid var(--border-color); padding: 12px; margin-bottom: 12px; position: relative; }
         .feature-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
         .feature-title { font-size: 11px; font-weight: bold; letter-spacing: 1px; color: #fff; }
         .feature-desc { font-size: 8px; color: var(--text-muted); margin-bottom: 10px; line-height: 1.4; }
-        
         .switch { position: relative; display: inline-block; width: 36px; height: 20px; }
         .switch input { opacity: 0; width: 0; height: 0; }
         .slider-switch { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #222; border: 1px solid #444; transition: .3s; }
         .slider-switch:before { position: absolute; content: ""; height: 14px; width: 14px; left: 2px; bottom: 2px; background-color: white; transition: .3s; }
         input:checked + .slider-switch { background-color: #fff; }
         input:checked + .slider-switch:before { transform: translateX(16px); background-color: #000; }
-
         .style-label { font-size: 8px; color: var(--text-muted); letter-spacing: 1px; margin-bottom: 6px; display: block; }
         .style-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; margin-bottom: 5px; }
         .style-btn { background: #0c0c0c; border: 1px solid var(--border-color); color: var(--text-muted); font-size: 8px; padding: 8px 4px; text-align: center; cursor: pointer; letter-spacing: 0.5px; }
         .style-btn.active { background: #fff; color: #000; font-weight: bold; border-color: #fff; }
-
         .aim-slider-container { display: flex; gap: 15px; align-items: center; margin-top: 10px; }
         .body-preview { width: 70px; height: 90px; background: #0c0c0c; border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: center; position: relative; }
         .slider-box { flex: 1; }
         .custom-range { width: 100%; accent-color: #fff; background: #333; height: 4px; outline: none; margin: 10px 0; }
         .range-labels { display: flex; justify-content: space-between; font-size: 7px; color: var(--text-muted); }
-
         .angle-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; margin-top: 8px; }
         .angle-btn { background: #0c0c0c; border: 1px solid var(--border-color); color: var(--text-main); font-size: 9px; padding: 6px; text-align: center; cursor: pointer; }
         .angle-btn.active { background: #fff; color: #000; font-weight: bold; }
-
         .nav-bar { position: absolute; bottom: 0; left: 0; width: 100%; background: #0f0f0f; border-top: 1px solid var(--border-color); display: flex; justify-content: space-around; padding: 10px 0; z-index: 10; }
         .nav-item { background: none; border: none; color: var(--text-muted); font-size: 9px; text-align: center; cursor: pointer; letter-spacing: 1px; }
         .nav-item.active { color: var(--text-main); }
@@ -136,13 +125,11 @@ const htmlPage = `<!DOCTYPE html>
         <div class="top-bar">
             <h1 id="page-title">DRAKE</h1>
             <div class="top-actions">
-                <a href="/admin" class="icon-btn">ADMIN</a>
                 <button class="icon-btn">EN</button>
             </div>
         </div>
 
         <div class="content">
-            <!-- 1. LOGIN SCREEN -->
             <div id="login-screen" class="screen active">
                 <div class="login-container">
                     <svg class="skull-logo" viewBox="0 0 24 24" fill="white"><path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,4A8,8 0 0,1 20,12A8,8 0 0,1 12,20A8,8 0 0,1 4,12A8,8 0 0,1 12,4Z"/></svg>
@@ -165,40 +152,25 @@ const htmlPage = `<!DOCTYPE html>
                 </div>
             </div>
 
-            <!-- 2. HOME SCREEN -->
             <div id="home-screen" class="screen">
                 <div class="status-row">
                     <span id="conn-status" style="color:#4caf50;">■ ONLINE</span>
                     <span>LAST REFRESHED JUST NOW</span>
                 </div>
-
                 <div class="timer-section">
                     <svg class="timer-skull" viewBox="0 0 24 24" fill="white"><path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,4A8,8 0 0,1 20,12A8,8 0 0,1 12,20A8,8 0 0,1 4,12A8,8 0 0,1 12,4Z"/></svg>
                     <div class="time-left-val" id="time-left-display">--</div>
                     <div class="time-left-label">TIME LEFT</div>
                 </div>
-
                 <div class="key-box">
                     <span id="display-key">-</span>
                     <button class="copy-btn" onclick="copyKeyText()">COPY</button>
                 </div>
-
                 <div class="info-grid">
-                    <div class="info-card">
-                        <span>ACTIVATED</span>
-                        <strong id="info-activated">-</strong>
-                    </div>
-                    <div class="info-card">
-                        <span>EXPIRES</span>
-                        <strong id="info-expires">-</strong>
-                    </div>
-                    <div class="info-card">
-                        <span>DEVICE</span>
-                        <strong id="info-device">-</strong>
-                    </div>
+                    <div class="info-card"><span>ACTIVATED</span><strong id="info-activated">-</strong></div>
+                    <div class="info-card"><span>EXPIRES</span><strong id="info-expires">-</strong></div>
+                    <div class="info-card"><span>DEVICE</span><strong id="info-device">-</strong></div>
                 </div>
-
-                <!-- Add Subscription Button with VPN Trigger -->
                 <div class="sub-box" onclick="openVpnApp()" style="cursor: pointer;">
                     <div>
                         <h3>ADD SUBSCRIPTION</h3>
@@ -208,13 +180,11 @@ const htmlPage = `<!DOCTYPE html>
                 </div>
             </div>
 
-            <!-- 3. FEATURES SCREEN -->
             <div id="features-screen" class="screen">
                 <div class="features-top-note">
                     <span>changes apply from your next match</span>
                     <span style="color:#fff; font-weight:bold;">5/5</span>
                 </div>
-
                 <div class="feature-card">
                     <div class="feature-header">
                         <span class="feature-title">01 MARKER</span>
@@ -233,7 +203,6 @@ const htmlPage = `<!DOCTYPE html>
                         <div class="style-btn" onclick="selectStyle(this)">DREKI</div>
                     </div>
                 </div>
-
                 <div class="feature-card">
                     <div class="feature-header">
                         <span class="feature-title">02 AIMPOINT <span style="font-size:6px; background:#333; padding:1px 3px;">NEW</span></span>
@@ -254,7 +223,6 @@ const htmlPage = `<!DOCTYPE html>
                         </div>
                     </div>
                 </div>
-
                 <div class="feature-card">
                     <div class="feature-header">
                         <span class="feature-title">03 AIM LAG</span>
@@ -270,7 +238,6 @@ const htmlPage = `<!DOCTYPE html>
                         <label class="switch" style="transform:scale(0.8)"><input type="checkbox" checked><span class="slider-switch"></span></label>
                     </div>
                 </div>
-
                 <div class="feature-card">
                     <div class="feature-header">
                         <span class="feature-title">04 GLOO WALL ROTATION</span>
@@ -289,7 +256,6 @@ const htmlPage = `<!DOCTYPE html>
                         <div class="angle-btn active" onclick="setAngle(this, 180)">180°</div>
                     </div>
                 </div>
-
                 <div class="feature-card">
                     <div class="feature-header">
                         <span class="feature-title">05 FAST REVIVE</span>
@@ -299,7 +265,6 @@ const htmlPage = `<!DOCTYPE html>
                 </div>
             </div>
 
-            <!-- 4. MANAGE SCREEN -->
             <div id="manage-screen" class="screen">
                 <div class="feature-card" style="margin-bottom:15px;">
                     <div style="font-size:8px; color:var(--text-muted); letter-spacing:1px;">THIS DEVICE</div>
@@ -316,7 +281,6 @@ const htmlPage = `<!DOCTYPE html>
             <button class="nav-item" onclick="switchTab('manage', this)"><div>⚙️</div>MANAGE</button>
         </div>
     </div>
-
     <script>
         let currentKey = "";
         let expiryTimeMs = 0;
@@ -333,11 +297,9 @@ const htmlPage = `<!DOCTYPE html>
             alert("Key copied to clipboard!");
         }
 
-        // Function to copy key and trigger VPN app
         function openVpnApp() {
             navigator.clipboard.writeText(currentKey).then(() => {
                 alert("Key copied! Opening VPN app...");
-                // Yeh scheme aapke custom vpn app ya happ proxy app ko open karegi
                 window.location.href = "happ://import/" + currentKey; 
             }).catch(err => {
                 alert("Could not copy key automatically.");
@@ -466,7 +428,6 @@ const htmlPage = `<!DOCTYPE html>
     </script>
 </body>
 </html>`;
-// --- ADMIN PANEL HTML ---
 const adminPage = `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -513,7 +474,6 @@ const adminPage = `<!DOCTYPE html>
 </body>
 </html>`;
 
-// --- ROUTES ---
 app.get('/', (req, res) => { res.send(htmlPage); });
 
 app.post('/api/verify', (req, res) => {
