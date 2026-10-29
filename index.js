@@ -53,6 +53,7 @@ const htmlPage = `<!DOCTYPE html>
             --border-color: #262626;
             --text-main: #ffffff;
             --text-muted: #888888;
+            --accent-red: #ff5252;
         }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: monospace, sans-serif; }
         body { background-color: var(--bg-color); color: var(--text-main); display: flex; justify-content: center; align-items: center; min-height: 100vh; overflow: hidden; }
@@ -61,11 +62,10 @@ const htmlPage = `<!DOCTYPE html>
         .top-bar h1 { font-size: 16px; letter-spacing: 2px; }
         .top-actions { display: flex; gap: 8px; align-items: center; }
         .icon-btn { background: var(--card-bg); border: 1px solid var(--border-color); color: var(--text-main); padding: 5px 10px; font-size: 11px; cursor: pointer; border-radius: 4px; text-decoration: none; }
-        .content { flex: 1; padding: 20px; padding-bottom: 90px; overflow-y: auto; height: 100%; }
+        .content { flex: 1; padding: 15px; padding-bottom: 90px; overflow-y: auto; height: 100%; }
         .screen { display: none; height: 100%; }
         .screen.active { display: block; }
         
-        /* Login Screen */
         .login-container { text-align: center; margin-top: 20px; }
         .skull-logo { width: 110px; margin-bottom: 15px; filter: drop-shadow(0 0 10px rgba(255,255,255,0.3)); }
         .login-container h2 { font-size: 24px; letter-spacing: 3px; margin-bottom: 5px; }
@@ -76,28 +76,51 @@ const htmlPage = `<!DOCTYPE html>
         .input-row input { background: transparent; border: none; color: var(--text-main); font-size: 13px; outline: none; width: 70%; letter-spacing: 1px; }
         .action-btn { width: 100%; background: var(--text-main); color: var(--bg-color); border: none; padding: 14px; font-weight: bold; font-size: 13px; letter-spacing: 2px; cursor: pointer; margin-top: 10px; clip-path: polygon(0 0, 96% 0, 100% 25%, 100% 100%, 4% 100%, 0 75%); }
         
-        /* Home Screen Style (Matched with Image) */
         .status-row { display: flex; justify-content: space-between; font-size: 9px; color: var(--text-muted); margin-bottom: 10px; letter-spacing: 1px; }
         .timer-section { text-align: center; position: relative; margin: 10px 0 20px 0; }
         .timer-skull { width: 90px; margin-bottom: 10px; filter: drop-shadow(0 0 8px rgba(255,255,255,0.4)); }
         .time-left-val { font-size: 26px; font-weight: bold; letter-spacing: 2px; margin-bottom: 2px; }
         .time-left-label { font-size: 9px; color: var(--text-muted); letter-spacing: 2px; }
-        
         .key-box { background: var(--card-bg); border: 1px solid var(--border-color); padding: 12px 15px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
         .key-box span { font-size: 11px; letter-spacing: 1px; word-break: break-all; }
         .copy-btn { background: #1f1f1f; border: 1px solid var(--border-color); color: #fff; padding: 6px 10px; font-size: 10px; cursor: pointer; letter-spacing: 1px; }
-        
         .info-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 12px; }
         .info-card { background: var(--card-bg); border: 1px solid var(--border-color); padding: 10px 6px; text-align: center; }
         .info-card span { display: block; font-size: 8px; color: var(--text-muted); margin-bottom: 4px; letter-spacing: 0.5px; }
         .info-card strong { font-size: 9px; word-break: break-word; }
-        
         .sub-box { background: var(--card-bg); border: 1px solid var(--border-color); padding: 12px 15px; display: flex; justify-content: space-between; align-items: center; clip-path: polygon(0 0, 96% 0, 100% 30%, 100% 100%, 0 100%); margin-bottom: 15px; }
         .sub-box h3 { font-size: 11px; letter-spacing: 1px; margin-bottom: 2px; }
         .sub-box p { font-size: 8px; color: var(--text-muted); }
         .add-btn { background: #dcdcdc; border: none; color: #000; width: 32px; height: 32px; font-size: 18px; font-weight: bold; display: flex; align-items: center; justify-content: center; cursor: pointer; }
 
-        /* Bottom Navbar */
+        .features-top-note { display: flex; justify-content: space-between; font-size: 9px; color: var(--text-muted); margin-bottom: 12px; letter-spacing: 0.5px; }
+        .feature-card { background: var(--card-bg); border: 1px solid var(--border-color); padding: 12px; margin-bottom: 12px; position: relative; }
+        .feature-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+        .feature-title { font-size: 11px; font-weight: bold; letter-spacing: 1px; color: #fff; }
+        .feature-desc { font-size: 8px; color: var(--text-muted); margin-bottom: 10px; line-height: 1.4; }
+        
+        .switch { position: relative; display: inline-block; width: 36px; height: 20px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider-switch { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #222; border: 1px solid #444; transition: .3s; }
+        .slider-switch:before { position: absolute; content: ""; height: 14px; width: 14px; left: 2px; bottom: 2px; background-color: white; transition: .3s; }
+        input:checked + .slider-switch { background-color: #fff; }
+        input:checked + .slider-switch:before { transform: translateX(16px); background-color: #000; }
+
+        .style-label { font-size: 8px; color: var(--text-muted); letter-spacing: 1px; margin-bottom: 6px; display: block; }
+        .style-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; margin-bottom: 5px; }
+        .style-btn { background: #0c0c0c; border: 1px solid var(--border-color); color: var(--text-muted); font-size: 8px; padding: 8px 4px; text-align: center; cursor: pointer; letter-spacing: 0.5px; }
+        .style-btn.active { background: #fff; color: #000; font-weight: bold; border-color: #fff; }
+
+        .aim-slider-container { display: flex; gap: 15px; align-items: center; margin-top: 10px; }
+        .body-preview { width: 70px; height: 90px; background: #0c0c0c; border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: center; position: relative; }
+        .slider-box { flex: 1; }
+        .custom-range { width: 100%; accent-color: #fff; background: #333; height: 4px; outline: none; margin: 10px 0; }
+        .range-labels { display: flex; justify-content: space-between; font-size: 7px; color: var(--text-muted); }
+
+        .angle-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; margin-top: 8px; }
+        .angle-btn { background: #0c0c0c; border: 1px solid var(--border-color); color: var(--text-main); font-size: 9px; padding: 6px; text-align: center; cursor: pointer; }
+        .angle-btn.active { background: #fff; color: #000; font-weight: bold; }
+
         .nav-bar { position: absolute; bottom: 0; left: 0; width: 100%; background: #0f0f0f; border-top: 1px solid var(--border-color); display: flex; justify-content: space-around; padding: 10px 0; z-index: 10; }
         .nav-item { background: none; border: none; color: var(--text-muted); font-size: 9px; text-align: center; cursor: pointer; letter-spacing: 1px; }
         .nav-item.active { color: var(--text-main); }
@@ -139,7 +162,7 @@ const htmlPage = `<!DOCTYPE html>
                 </div>
             </div>
 
-            <!-- 2. HOME SCREEN (Exact match with image 2921.png) -->
+            <!-- 2. HOME SCREEN -->
             <div id="home-screen" class="screen">
                 <div class="status-row">
                     <span id="conn-status" style="color:#4caf50;">■ ONLINE</span>
@@ -183,19 +206,98 @@ const htmlPage = `<!DOCTYPE html>
 
             <!-- 3. FEATURES SCREEN -->
             <div id="features-screen" class="screen">
-                <div class="feature-card" style="background:var(--card-bg); border:1px solid var(--border-color); padding:12px; margin-bottom:12px;">
-                    <div class="feature-title" style="font-size:11px; font-weight:bold; margin-bottom:4px;">01 MARKER</div>
-                    <div class="feature-desc" style="font-size:9px; color:var(--text-muted);">marks every enemy on your screen.</div>
+                <div class="features-top-note">
+                    <span>changes apply from your next match</span>
+                    <span style="color:#fff; font-weight:bold;">5/5</span>
                 </div>
-                <div class="feature-card" style="background:var(--card-bg); border:1px solid var(--border-color); padding:12px; margin-bottom:12px;">
-                    <div class="feature-title" style="font-size:11px; font-weight:bold; margin-bottom:4px;">02 AIMPOINT <span style="font-size:7px; background:#333; padding:2px 4px;">NEW</span></div>
-                    <div class="feature-desc" style="font-size:9px; color:var(--text-muted);">moves your aim from the chest toward the head.</div>
+
+                <div class="feature-card">
+                    <div class="feature-header">
+                        <span class="feature-title">01 MARKER</span>
+                        <label class="switch"><input type="checkbox" checked><span class="slider-switch"></span></label>
+                    </div>
+                    <div class="feature-desc">marks every enemy on your screen.</div>
+                    <span class="style-label">MARK STYLE</span>
+                    <div class="style-grid">
+                        <div class="style-btn active" onclick="selectStyle(this)">DRAKE</div>
+                        <div class="style-btn" onclick="selectStyle(this)">DREAM</div>
+                        <div class="style-btn" onclick="selectStyle(this)">ICE WALL</div>
+                        <div class="style-btn" onclick="selectStyle(this)">MOCO</div>
+                        <div class="style-btn" onclick="selectStyle(this)">CLU</div>
+                        <div class="style-btn" onclick="selectStyle(this)">SHIROU</div>
+                        <div class="style-btn" onclick="selectStyle(this)">IRIS</div>
+                        <div class="style-btn" onclick="selectStyle(this)">DREKI</div>
+                    </div>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-header">
+                        <span class="feature-title">02 AIMPOINT <span style="font-size:6px; background:#333; padding:1px 3px;">NEW</span></span>
+                        <label class="switch"><input type="checkbox" checked><span class="slider-switch"></span></label>
+                    </div>
+                    <div class="feature-desc">moves your aim from the chest toward the head. slide to choose how far.</div>
+                    <div style="font-size:11px; font-weight:bold; color:#ff5252; margin-bottom:5px;">AIM HEIGHT: <span id="aim-val">100%</span> (HEAD)</div>
+                    <div class="aim-slider-container">
+                        <div class="body-preview">
+                            <svg width="35" height="55" viewBox="0 0 24 24" fill="#ff5252"><path d="M12,2A3,3 0 0,1 15,5A3,3 0 0,1 12,8A3,3 0 0,1 9,5A3,3 0 0,1 12,2M19,15C19,12.5 14.5,11 12,11C9.5,11 5,12.5 5,15V22H19V15Z"/></svg>
+                        </div>
+                        <div class="slider-box">
+                            <input type="range" min="0" max="100" value="100" class="custom-range" id="aimRange" oninput="updateAim(this.value)">
+                            <div class="range-labels">
+                                <span>CHEST (0%)</span>
+                                <span>HEAD (100%)</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-header">
+                        <span class="feature-title">03 AIM LAG</span>
+                        <label class="switch"><input type="checkbox"><span class="slider-switch"></span></label>
+                    </div>
+                    <div class="feature-desc">freezes the enemy for a moment while you fire or scope, so they're easier to hit.</div>
+                    <div style="display:flex; justify-content:space-between; align-items:center; background:#0c0c0c; padding:8px; margin-bottom:6px; border:1px solid #222;">
+                        <span style="font-size:9px;">when firing</span>
+                        <label class="switch" style="transform:scale(0.8)"><input type="checkbox"><span class="slider-switch"></span></label>
+                    </div>
+                    <div style="display:flex; justify-content:space-between; align-items:center; background:#0c0c0c; padding:8px; border:1px solid #222;">
+                        <span style="font-size:9px;">when scoping</span>
+                        <label class="switch" style="transform:scale(0.8)"><input type="checkbox" checked><span class="slider-switch"></span></label>
+                    </div>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-header">
+                        <span class="feature-title">04 GLOO WALL ROTATION</span>
+                        <label class="switch"><input type="checkbox" checked><span class="slider-switch"></span></label>
+                    </div>
+                    <div class="feature-desc">turns your gloo wall to the angle you set.</div>
+                    <div style="display:flex; justify-content:space-between; font-size:12px; font-weight:bold; margin-bottom:5px;">
+                        <span style="font-size:9px; color:var(--text-muted);">WALL ANGLE</span>
+                        <span id="angle-val" style="color:#fff;">180°</span>
+                    </div>
+                    <input type="range" min="-90" max="180" value="180" class="custom-range" oninput="updateAngle(this.value)">
+                    <div class="angle-grid">
+                        <div class="angle-btn" onclick="setAngle(this, -90)">-90°</div>
+                        <div class="angle-btn" onclick="setAngle(this, 0)">0°</div>
+                        <div class="angle-btn" onclick="setAngle(this, 90)">+90°</div>
+                        <div class="angle-btn active" onclick="setAngle(this, 180)">180°</div>
+                    </div>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-header">
+                        <span class="feature-title">05 FAST REVIVE</span>
+                        <label class="switch"><input type="checkbox" checked><span class="slider-switch"></span></label>
+                    </div>
+                    <div class="feature-desc">picks up a knocked teammate in about 0.1 s instead of 3 s.</div>
                 </div>
             </div>
 
             <!-- 4. MANAGE SCREEN -->
             <div id="manage-screen" class="screen">
-                <div class="feature-card" style="background:var(--card-bg); border:1px solid var(--border-color); padding:12px; margin-bottom:15px;">
+                <div class="feature-card" style="margin-bottom:15px;">
                     <div style="font-size:8px; color:var(--text-muted); letter-spacing:1px;">THIS DEVICE</div>
                     <div id="manage-device-name" style="font-size:13px; font-weight:bold; margin:4px 0;">-</div>
                     <button class="action-btn" onclick="resetDevice()" style="background:#1a1a1a; color:#fff; border:1px solid #333; padding:10px; margin-top:8px; font-size:11px;">RESET DEVICE</button>
@@ -225,6 +327,25 @@ const htmlPage = `<!DOCTYPE html>
         function copyKeyText() {
             navigator.clipboard.writeText(currentKey);
             alert("Key copied to clipboard!");
+        }
+
+        function selectStyle(el) {
+            document.querySelectorAll('.style-btn').forEach(b => b.classList.remove('active'));
+            el.classList.add('active');
+        }
+
+        function updateAim(val) {
+            document.getElementById('aim-val').innerText = val + '%';
+        }
+
+        function updateAngle(val) {
+            document.getElementById('angle-val').innerText = val + '°';
+        }
+
+        function setAngle(el, val) {
+            document.querySelectorAll('.angle-btn').forEach(b => b.classList.remove('active'));
+            el.classList.add('active');
+            document.getElementById('angle-val').innerText = val + '°';
         }
 
         async function handleLogin(e) {
@@ -402,16 +523,13 @@ app.post('/api/verify', (req, res) => {
 
     db.prepare(`UPDATE keys SET status = 'active', activated_date = ?, expiry_date = ?, device_info = ? WHERE key_code = ?`).run(activated, expires, deviceInfo, key);
   } else {
-    // Check expiration based on stored expiry string or recompute
     if (new Date(expires) < now) { 
       return res.json({ success: false, message: 'Key has expired!' }); 
     }
   }
 
-  // Re-fetch updated row
   const updatedRow = db.prepare('SELECT * FROM keys WHERE key_code = ?').get(key);
 
-  // Calculate raw expiry timestamp for live countdown
   let rawExpiryDate = new Date();
   if (updatedRow.duration_type === 'hours') {
     rawExpiryDate = new Date(new Date().getTime() + (updatedRow.duration_value * 60 * 60 * 1000));
