@@ -300,7 +300,7 @@ const htmlPage = `<!DOCTYPE html>
 
         function openVpnApp() {
             navigator.clipboard.writeText(currentKey).then(() => {
-                alert("Key copied! Opening VPN app...");
+                alert("Key copied! Opening Happ Proxy Utility...");
                 window.location.href = "happ://import/" + currentKey; 
             }).catch(err => {
                 alert("Could not copy key automatically.");
