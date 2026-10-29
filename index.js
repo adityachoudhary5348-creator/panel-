@@ -8,18 +8,26 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 function getDeviceInfo(userAgent) {
-    let device = "iPhone 11 Pro Max";
-    let os = "iOS";
-    let code = "2zd29jp7697olnld";
+    let device = "Android Device";
+    let os = "Android";
+    let code = "and99jp7697olnld";
     
-    if (/android/i.test(userAgent)) {
-        device = "ANDROID DEVICE";
-        os = "Android";
-        code = "and99jp7697olnld";
+    if (/iphone/i.test(userAgent)) {
+        device = "iPhone 11 Pro Max";
+        os = "iOS";
+        code = "2zd29jp7697olnld";
+    } else if (/ipad/i.test(userAgent)) {
+        device = "iPad";
+        os = "iOS";
+        code = "ipad29jp7697olnld";
     } else if (/windows/i.test(userAgent)) {
-        device = "WINDOWS PC";
+        device = "Windows PC";
         os = "Windows";
         code = "win29jp7697olnld";
+    } else if (/macintosh/i.test(userAgent)) {
+        device = "Macbook / Mac";
+        os = "MacOS";
+        code = "mac29jp7697olnld";
     }
     return { device, os, code };
 }
@@ -186,7 +194,6 @@ app.get('/', (req, res) => {
             line-height: 1.6;
             letter-spacing: 0.5px;
         }
-        /* Navigation Bar */
         nav {
             position: fixed;
             bottom: 0;
@@ -305,7 +312,7 @@ app.get('/', (req, res) => {
                 <input type="text" id="keyInput" placeholder="DRAKE-XXXX-XXXX-XXXX" value="DRAKE-E9E0-1A89-A3E7">
                 <button class="btn-paste" onclick="navigator.clipboard.readText().then(t => document.getElementById('keyInput').value = t)">PASTE</button>
             </div>
-            <div id="errorMsg">Invalid Key! Please use: DRAKE-E9E0-1A89-A3E7</div>
+            <div id="errorMsg">Invalid Key! Please use a valid key format.</div>
         </div>
 
         <button class="btn-unlock" onclick="verifyKey()">UNLOCK</button>
@@ -332,12 +339,12 @@ app.get('/', (req, res) => {
 
         <div style="text-align: center; padding: 10px 0 25px 0;">
             <div class="skull-img" style="width: 90px; height: 90px; font-size: 45px; margin-bottom: 10px;">💀</div>
-            <div style="font-size: 2rem; font-weight: 900; letter-spacing: 2px;">2H 11M</div>
+            <div id="timeDisplay" style="font-size: 2rem; font-weight: 900; letter-spacing: 2px;">2H 11M</div>
             <div style="font-size: 0.6rem; color: var(--text-muted); letter-spacing: 2px; margin-top: 2px;">TIME LEFT</div>
         </div>
 
         <div class="card">
-            <div style="font-size: 0.65rem; color: var(--text-muted); margin-bottom: 6px; letter-spacing: 0.5px;">KEY &nbsp; <span id="displayKeyText" style="color: #fff; font-family: monospace; font-weight: bold;">DRAKE-E9E0-1A89-A3E7</span></div>
+            <div style="font-size: 0.65rem; color: var(--text-muted); margin-bottom: 6px; letter-spacing: 0.5px;">KEY &nbsp; <span id="displayKeyText" style="color: #fff; font-family: monospace; font-weight: bold;">-</span></div>
             <div style="position: absolute; right: 14px; top: 12px;">
                 <button class="btn-paste" onclick="navigator.clipboard.writeText(document.getElementById('displayKeyText').innerText)">📋 COPY</button>
             </div>
@@ -531,15 +538,25 @@ app.get('/', (req, res) => {
             const key = document.getElementById('keyInput').value.trim();
             const err = document.getElementById('errorMsg');
             
-            if(key === 'DRAKE-E9E0-1A89-A3E7' || key.startsWith('DRAKE-')) {
+            if(key.startsWith('DRAKE-')) {
                 err.style.display = 'none';
                 document.getElementById('login-screen').classList.remove('active');
                 document.getElementById('bottomNav').style.display = 'flex';
                 document.getElementById('displayKeyText').innerText = key;
+                
+                // Dynamic time assignment based on key pattern or default
+                if(key.includes('1H')) {
+                    document.getElementById('timeDisplay').innerText = '1H 00M';
+                } else if(key.includes('3H')) {
+                    document.getElementById('timeDisplay').innerText = '3H 00M';
+                } else {
+                    document.getElementById('timeDisplay').innerText = '2H 11M';
+                }
+                
                 switchTab('home');
             } else {
                 err.style.display = 'block';
-                err.innerText = 'Invalid Key! Please use: DRAKE-E9E0-1A89-A3E7';
+                err.innerText = 'Invalid Key! Key must start with DRAKE-';
             }
         }
 
@@ -547,7 +564,7 @@ app.get('/', (req, res) => {
             e.preventDefault();
             window.location.href = "happ://";
             setTimeout(() => {
-                alert("Add Subscription: VPN app launched successfully with your active session key!");
+                alert("Add Subscription: VPN app launched successfully with your active key!");
             }, 500);
         }
     </script>
