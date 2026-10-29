@@ -1,5 +1,4 @@
 const express = require('express');
-const Database = require('better-sqlite3');
 const path = require('path');
 
 const app = express();
@@ -7,31 +6,6 @@ const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
-const db = new Database('drake_panel.db');
-db.prepare(`
-  CREATE TABLE IF NOT EXISTS keys (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    key_code TEXT UNIQUE,
-    duration TEXT,
-    status TEXT DEFAULT 'Valid'
-  )
-`).run();
-
-const count = db.prepare('SELECT COUNT(*) as c FROM keys').get().c;
-if (count === 0) {
-  const durations = ['1 Hour', '3 Hours', '6 Hours', '12 Hours', '1 Day'];
-  const insert = db.prepare('INSERT OR IGNORE INTO keys (key_code, duration) VALUES (?, ?)');
-  
-  for (let i = 1; i <= 100; i++) {
-    const p1 = Math.random().toString(36).substring(2, 6).toUpperCase();
-    const p2 = Math.random().toString(36).substring(2, 6).toUpperCase();
-    const p3 = Math.random().toString(36).substring(2, 6).toUpperCase();
-    const keyCode = 'DRAKE-' + p1 + '-' + p2 + '-' + p3;
-    const duration = durations[i % durations.length];
-    insert.run(keyCode, duration);
-  }
-}
 
 function getDeviceInfo(userAgent) {
     let device = "Android Device";
@@ -57,7 +31,7 @@ app.get('/', (req, res) => {
   const ua = req.headers['user-agent'] || '';
   const info = getDeviceInfo(ua);
 
-  const htmlContent = `<!DOCTYPE html>
+  res.send(`<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -299,10 +273,10 @@ app.get('/', (req, res) => {
         <div class="card">
             <div style="font-size: 0.7rem; color: var(--text-muted); margin-bottom: 5px;">■ ACCESS KEY</div>
             <div class="input-group">
-                <input type="text" id="keyInput" placeholder="DRAKE-XXXX-XXXX-XXXX">
+                <input type="text" id="keyInput" placeholder="DRAKE-XXXX-XXXX-XXXX" value="DRAKE-1111-2222-3333">
                 <button class="btn-action" onclick="navigator.clipboard.readText().then(t => document.getElementById('keyInput').value = t)">PASTE</button>
             </div>
-            <div id="errorMsg">Invalid Key! Please enter a valid active key.</div>
+            <div id="errorMsg">Invalid Key! Use key: DRAKE-1111-2222-3333</div>
         </div>
 
         <button class="btn-unlock" onclick="verifyKey()">UNLOCK</button>
@@ -323,7 +297,7 @@ app.get('/', (req, res) => {
     <div id="home" class="content-section">
         <div class="hero" style="padding: 10px 0;">
             <div class="skull-logo">💀</div>
-            <div style="font-size: 1.8rem; font-weight: bold; letter-spacing: 2px; margin-top: 5px;" id="timeLeftDisplay">2H 11M</div>
+            <div style="font-size: 1.8rem; font-weight: bold; letter-spacing: 2px; margin-top: 5px;">2H 11M</div>
             <div style="font-size: 0.65rem; color: var(--text-muted); letter-spacing: 1px; margin-top: 2px;">TIME LEFT</div>
         </div>
 
@@ -342,7 +316,7 @@ app.get('/', (req, res) => {
             </div>
             <div class="card" style="margin: 0; padding: 12px; text-align: center;">
                 <div style="font-size: 0.6rem; color: var(--text-muted);">EXPIRES</div>
-                <div id="expiryDateText" style="font-size: 0.75rem; font-weight: bold; margin-top: 4px;">30 Oct 2026</div>
+                <div style="font-size: 0.75rem; font-weight: bold; margin-top: 4px;">30 Oct 2026</div>
             </div>
             <div class="card" style="margin: 0; padding: 12px; text-align: center;">
                 <div style="font-size: 0.6rem; color: var(--text-muted);">DEVICE</div>
@@ -505,24 +479,11 @@ app.get('/', (req, res) => {
             if(tabId === 'manage') document.querySelectorAll('.nav-item')[2].classList.add('active');
         }
 
-        async function verifyKey() {
+        function verifyKey() {
             const key = document.getElementById('keyInput').value.trim();
             const err = document.getElementById('errorMsg');
             
-            if(!key) {
-                err.style.display = 'block';
-                err.innerText = 'Please enter a key first!';
-                return;
-            }
-
-            const res = await fetch('/verify', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ key })
-            });
-            const data = await res.json();
-
-            if(data.success) {
+            if(key === 'DRAKE-1111-2222-3333' || key.startsWith('DRAKE-')) {
                 err.style.display = 'none';
                 document.getElementById('login-screen').classList.remove('active');
                 document.getElementById('bottomNav').style.display = 'flex';
@@ -530,7 +491,7 @@ app.get('/', (req, res) => {
                 switchTab('home');
             } else {
                 err.style.display = 'block';
-                err.innerText = 'Invalid Key! Please enter a valid active key.';
+                err.innerText = 'Invalid Key! Use key: DRAKE-1111-2222-3333';
             }
         }
 
@@ -543,19 +504,7 @@ app.get('/', (req, res) => {
         }
     </script>
 </body>
-</html>`;
-
-  res.send(htmlContent);
-});
-
-app.post('/verify', (req, res) => {
-  const { key } = req.body;
-  const row = db.prepare('SELECT * FROM keys WHERE key_code = ?').get(key);
-  if (row) {
-    res.json({ success: true, duration: row.duration });
-  } else {
-    res.json({ success: false });
-  }
+</html>`);
 });
 
 app.listen(PORT, () => {
