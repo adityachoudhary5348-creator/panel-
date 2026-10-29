@@ -8,23 +8,20 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 function getDeviceInfo(userAgent) {
-    let device = "Android Device";
-    let os = "Android";
+    let device = "iPhone 11 Pro Max";
+    let os = "iOS";
+    let code = "2zd29jp7697olnld";
     
-    if (/iphone/i.test(userAgent)) {
-        device = "iPhone / iOS Device";
-        os = "iOS";
-    } else if (/ipad/i.test(userAgent)) {
-        device = "iPad";
-        os = "iOS";
+    if (/android/i.test(userAgent)) {
+        device = "ANDROID DEVICE";
+        os = "Android";
+        code = "and99jp7697olnld";
     } else if (/windows/i.test(userAgent)) {
-        device = "Windows PC";
+        device = "WINDOWS PC";
         os = "Windows";
-    } else if (/macintosh/i.test(userAgent)) {
-        device = "Macbook / Mac";
-        os = "MacOS";
+        code = "win29jp7697olnld";
     }
-    return { device, os };
+    return { device, os, code };
 }
 
 app.get('/', (req, res) => {
@@ -36,7 +33,7 @@ app.get('/', (req, res) => {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DRAKE PANEL</title>
+    <title>DRAKE BY NULLDASH</title>
     <style>
         :root {
             --bg-color: #0b0b0b;
@@ -51,135 +48,162 @@ app.get('/', (req, res) => {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             margin: 0;
             padding: 0;
-            padding-bottom: 80px;
+            padding-bottom: 90px;
         }
         header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             padding: 15px 20px;
-            background: #111;
+            background: #0b0b0b;
             border-bottom: 1px solid var(--border-color);
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             letter-spacing: 1px;
+            font-weight: bold;
+        }
+        .header-icons {
+            display: flex;
+            gap: 15px;
+            font-size: 1rem;
         }
         .content-section {
             display: none;
-            padding: 20px;
+            padding: 15px 20px;
             max-width: 600px;
             margin: 0 auto;
         }
         .content-section.active {
             display: block;
         }
-        .hero {
+        .login-hero {
             text-align: center;
-            padding: 20px 0;
+            padding: 40px 0 20px 0;
         }
-        .skull-logo {
-            width: 80px;
-            height: 80px;
+        .skull-img {
+            width: 110px;
+            height: 110px;
             background: #fff;
-            margin: 0 auto 12px auto;
-            clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+            margin: 0 auto 20px auto;
+            clip-path: polygon(50% 0%, 100% 20%, 100% 70%, 85% 100%, 15% 100%, 0% 70%, 0% 20%);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 35px;
+            font-size: 55px;
         }
-        h1 {
-            font-size: 1.4rem;
-            letter-spacing: 2px;
-            margin: 5px 0;
+        .brand-title {
+            font-size: 1.8rem;
+            letter-spacing: 3px;
+            font-weight: 900;
+            margin: 10px 0;
         }
-        .tagline {
+        .brand-subtitle {
             color: var(--text-muted);
-            font-size: 0.7rem;
+            font-size: 0.65rem;
             letter-spacing: 1px;
             text-transform: uppercase;
-            margin-bottom: 20px;
+            margin-bottom: 30px;
         }
         .card {
             background: var(--card-bg);
             border: 1px solid var(--border-color);
-            border-radius: 12px;
+            border-radius: 6px;
             padding: 16px;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
+            position: relative;
         }
-        .input-group {
+        .input-box-wrapper {
+            background: #0a0a0a;
+            border: 1px solid #333;
+            border-radius: 6px;
             display: flex;
-            gap: 10px;
+            align-items: center;
+            padding: 4px 8px 4px 12px;
             margin-top: 8px;
         }
         input[type="text"] {
             flex: 1;
-            background: #0a0a0a;
-            border: 1px solid #333;
-            border-radius: 8px;
-            padding: 12px;
+            background: transparent;
+            border: none;
             color: #fff;
             font-family: monospace;
             font-size: 0.85rem;
+            outline: none;
+            letter-spacing: 1px;
         }
-        .btn-action {
-            background: #222;
+        .btn-paste {
+            background: #1c1c1c;
             color: #fff;
-            border: 1px solid #444;
-            padding: 0 16px;
-            border-radius: 8px;
+            border: 1px solid #333;
+            padding: 8px 14px;
+            border-radius: 4px;
             font-weight: bold;
+            font-size: 0.7rem;
+            letter-spacing: 1px;
             cursor: pointer;
-            font-size: 0.75rem;
         }
         .btn-unlock {
             width: 100%;
             background: #fff;
             color: #000;
             border: none;
-            padding: 14px;
-            border-radius: 8px;
-            font-weight: bold;
-            font-size: 0.9rem;
-            letter-spacing: 2px;
-            margin-top: 10px;
+            padding: 16px;
+            border-radius: 6px;
+            font-weight: 900;
+            font-size: 0.95rem;
+            letter-spacing: 3px;
+            margin-top: 15px;
             cursor: pointer;
         }
-        .add-sub-card {
-            background: linear-gradient(135deg, #181818, #222);
-            border: 1px solid #444;
+        .add-sub-box {
+            background: #141414;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 16px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             text-decoration: none;
             color: #fff;
-            padding: 16px;
-            border-radius: 12px;
             margin-top: 15px;
         }
-        .footer-note {
+        .add-sub-btn {
+            background: #222;
+            border: 1px solid #444;
+            width: 36px;
+            height: 36px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+        .footer-info {
             text-align: center;
             color: var(--text-muted);
-            font-size: 0.7rem;
-            margin-top: 15px;
-            line-height: 1.4;
+            font-size: 0.65rem;
+            margin-top: 25px;
+            line-height: 1.6;
+            letter-spacing: 0.5px;
         }
+        /* Navigation Bar */
         nav {
             position: fixed;
             bottom: 0;
             left: 0;
             width: 100%;
-            background: #0e0e0e;
+            background: #0b0b0b;
             border-top: 1px solid var(--border-color);
             display: none;
             justify-content: space-around;
-            padding: 10px 0;
+            padding: 12px 0 8px 0;
             z-index: 100;
         }
         .nav-item {
             background: none;
             border: none;
             color: var(--text-muted);
-            font-size: 0.65rem;
+            font-size: 0.6rem;
             letter-spacing: 1px;
             text-align: center;
             cursor: pointer;
@@ -196,61 +220,62 @@ app.get('/', (req, res) => {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
         }
         .feature-title {
-            font-weight: bold;
+            font-weight: 900;
             font-size: 0.85rem;
             letter-spacing: 1px;
         }
         .feature-desc {
             color: var(--text-muted);
-            font-size: 0.7rem;
-            margin-top: 3px;
+            font-size: 0.68rem;
+            margin-top: 4px;
+            line-height: 1.4;
         }
         .switch {
             position: relative;
             display: inline-block;
-            width: 40px;
-            height: 22px;
+            width: 46px;
+            height: 24px;
         }
         .switch input { opacity: 0; width: 0; height: 0; }
         .slider {
             position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
-            background-color: #222; transition: .3s; border-radius: 22px; border: 1px solid #444;
+            background-color: #1a1a1a; transition: .3s; border-radius: 4px; border: 1px solid #333;
         }
         .slider:before {
-            position: absolute; content: ""; height: 16px; width: 16px; left: 2px; bottom: 2px;
-            background-color: white; transition: .3s; border-radius: 50%;
+            position: absolute; content: ""; height: 18px; width: 18px; left: 2px; bottom: 2px;
+            background-color: white; transition: .3s; border-radius: 2px;
         }
         input:checked + .slider { background-color: #fff; }
-        input:checked + .slider:before { transform: translateX(18px); background-color: #000; }
+        input:checked + .slider:before { transform: translateX(22px); background-color: #000; }
         .style-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
             gap: 6px;
-            margin-top: 10px;
+            margin-top: 12px;
         }
         .style-btn {
-            background: #0d0d0d;
-            border: 1px solid #333;
+            background: #0a0a0a;
+            border: 1px solid #222;
             color: var(--text-muted);
-            padding: 8px 4px;
-            border-radius: 6px;
-            font-size: 0.65rem;
+            padding: 10px 4px;
+            border-radius: 4px;
+            font-size: 0.6rem;
             text-align: center;
             cursor: pointer;
+            font-weight: bold;
+            letter-spacing: 0.5px;
         }
         .style-btn.active {
             background: #fff;
             color: #000;
-            font-weight: bold;
             border-color: #fff;
         }
         #errorMsg {
             color: #ff4d4d;
-            font-size: 0.75rem;
-            text-align: center;
+            font-size: 0.7rem;
             margin-top: 8px;
             display: none;
         }
@@ -259,82 +284,92 @@ app.get('/', (req, res) => {
 <body>
 
     <header>
-        <span>DRAKE PANEL</span>
-        <span>EN</span>
+        <span>DRAKE BY NULLDASH</span>
+        <div class="header-icons">
+            <span>🔔</span>
+            <span>🌐 EN</span>
+        </div>
     </header>
 
+    <!-- 1. LOGIN SCREEN -->
     <div id="login-screen" class="content-section active">
-        <div class="hero">
-            <div class="skull-logo">💀</div>
-            <h1>DRAKE PANEL</h1>
-            <div class="tagline">NO ACCOUNT. NO PASSWORD. JUST YOUR KEY.</div>
+        <div class="login-hero">
+            <div class="skull-img">💀</div>
+            <div class="brand-title">DRAKE</div>
+            <div class="brand-subtitle">NO ACCOUNT. NO PASSWORD. JUST YOUR KEY.</div>
         </div>
 
         <div class="card">
-            <div style="font-size: 0.7rem; color: var(--text-muted); margin-bottom: 5px;">■ ACCESS KEY</div>
-            <div class="input-group">
-                <input type="text" id="keyInput" placeholder="DRAKE-XXXX-XXXX-XXXX" value="DRAKE-1111-2222-3333">
-                <button class="btn-action" onclick="navigator.clipboard.readText().then(t => document.getElementById('keyInput').value = t)">PASTE</button>
+            <div style="font-size: 0.65rem; color: var(--text-muted); letter-spacing: 1px;">■ ACCESS KEY</div>
+            <div class="input-box-wrapper">
+                <input type="text" id="keyInput" placeholder="DRAKE-XXXX-XXXX-XXXX" value="DRAKE-E9E0-1A89-A3E7">
+                <button class="btn-paste" onclick="navigator.clipboard.readText().then(t => document.getElementById('keyInput').value = t)">PASTE</button>
             </div>
-            <div id="errorMsg">Invalid Key! Use key: DRAKE-1111-2222-3333</div>
+            <div id="errorMsg">Invalid Key! Please use: DRAKE-E9E0-1A89-A3E7</div>
         </div>
 
         <button class="btn-unlock" onclick="verifyKey()">UNLOCK</button>
 
-        <a href="#" onclick="openVpnApp(event)" class="add-sub-card">
+        <a href="#" onclick="openVpnApp(event)" class="add-sub-box">
             <div>
-                <div style="font-weight: bold; font-size: 0.85rem; letter-spacing: 1px;">ADD SUBSCRIPTION</div>
-                <div style="font-size: 0.7rem; color: var(--text-muted); margin-top: 2px;">opens your vpn app with your key ready</div>
+                <div style="font-weight: 900; font-size: 0.8rem; letter-spacing: 1px;">ADD SUBSCRIPTION</div>
+                <div style="font-size: 0.65rem; color: var(--text-muted); margin-top: 2px;">opens your vpn app with your key ready</div>
             </div>
-            <div style="background: #333; padding: 10px 14px; border-radius: 8px; font-size: 1.1rem; font-weight: bold;">+</div>
+            <div class="add-sub-btn">+</div>
         </a>
 
-        <div class="footer-note">
+        <div class="footer-info">
             no key? contact your seller.<br>
             your time starts when you connect.
         </div>
     </div>
+    <!-- 2. HOME TAB -->
     <div id="home" class="content-section">
-        <div class="hero" style="padding: 10px 0;">
-            <div class="skull-logo">💀</div>
-            <div style="font-size: 1.8rem; font-weight: bold; letter-spacing: 2px; margin-top: 5px;">2H 11M</div>
-            <div style="font-size: 0.65rem; color: var(--text-muted); letter-spacing: 1px; margin-top: 2px;">TIME LEFT</div>
+        <div style="display: flex; justify-content: space-between; align-items: center; color: var(--text-muted); font-size: 0.65rem; margin-bottom: 15px; letter-spacing: 0.5px;">
+            <div style="background: #1c1c1c; padding: 4px 8px; border-radius: 3px; border: 1px solid #333;">■ OFFLINE</div>
+            <div>LAST REFRESHED 45 MIN AGO</div>
+        </div>
+
+        <div style="text-align: center; padding: 10px 0 25px 0;">
+            <div class="skull-img" style="width: 90px; height: 90px; font-size: 45px; margin-bottom: 10px;">💀</div>
+            <div style="font-size: 2rem; font-weight: 900; letter-spacing: 2px;">2H 11M</div>
+            <div style="font-size: 0.6rem; color: var(--text-muted); letter-spacing: 2px; margin-top: 2px;">TIME LEFT</div>
         </div>
 
         <div class="card">
-            <div style="font-size: 0.65rem; color: var(--text-muted); margin-bottom: 4px;">KEY</div>
-            <div style="display: flex; justify-content: space-between; align-items: center; background: #0a0a0a; padding: 10px; border-radius: 8px; border: 1px solid #333;">
-                <span id="activeKeyText" style="font-family: monospace; font-size: 0.85rem; color: #fff;">-</span>
-                <button class="btn-action" onclick="navigator.clipboard.writeText(document.getElementById('activeKeyText').innerText)">COPY</button>
+            <div style="font-size: 0.65rem; color: var(--text-muted); margin-bottom: 6px; letter-spacing: 0.5px;">KEY &nbsp; <span id="displayKeyText" style="color: #fff; font-family: monospace; font-weight: bold;">DRAKE-E9E0-1A89-A3E7</span></div>
+            <div style="position: absolute; right: 14px; top: 12px;">
+                <button class="btn-paste" onclick="navigator.clipboard.writeText(document.getElementById('displayKeyText').innerText)">📋 COPY</button>
             </div>
         </div>
 
-        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 15px;">
-            <div class="card" style="margin: 0; padding: 12px; text-align: center;">
-                <div style="font-size: 0.6rem; color: var(--text-muted);">ACTIVATED</div>
-                <div style="font-size: 0.75rem; font-weight: bold; margin-top: 4px;">29 Oct 2026</div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 12px;">
+            <div class="card" style="margin: 0; padding: 12px 8px; text-align: center;">
+                <div style="font-size: 0.55rem; color: var(--text-muted); letter-spacing: 0.5px;">ACTIVATED</div>
+                <div style="font-size: 0.7rem; font-weight: bold; margin-top: 4px;">29 Oct 2026</div>
             </div>
-            <div class="card" style="margin: 0; padding: 12px; text-align: center;">
-                <div style="font-size: 0.6rem; color: var(--text-muted);">EXPIRES</div>
-                <div style="font-size: 0.75rem; font-weight: bold; margin-top: 4px;">30 Oct 2026</div>
+            <div class="card" style="margin: 0; padding: 12px 8px; text-align: center;">
+                <div style="font-size: 0.55rem; color: var(--text-muted); letter-spacing: 0.5px;">EXPIRES</div>
+                <div style="font-size: 0.7rem; font-weight: bold; margin-top: 4px;">30 Oct 2026</div>
             </div>
-            <div class="card" style="margin: 0; padding: 12px; text-align: center;">
-                <div style="font-size: 0.6rem; color: var(--text-muted);">DEVICE</div>
-                <div style="font-size: 0.75rem; font-weight: bold; margin-top: 4px;">${info.device}</div>
+            <div class="card" style="margin: 0; padding: 12px 8px; text-align: center;">
+                <div style="font-size: 0.55rem; color: var(--text-muted); letter-spacing: 0.5px;">DEVICE</div>
+                <div style="font-size: 0.7rem; font-weight: bold; margin-top: 4px;">${info.device}</div>
             </div>
         </div>
 
-        <a href="#" onclick="openVpnApp(event)" class="add-sub-card">
+        <a href="#" onclick="openVpnApp(event)" class="add-sub-box">
             <div>
-                <div style="font-weight: bold; font-size: 0.85rem; letter-spacing: 1px;">ADD SUBSCRIPTION</div>
-                <div style="font-size: 0.7rem; color: var(--text-muted); margin-top: 2px;">opens your vpn app with your key ready</div>
+                <div style="font-weight: 900; font-size: 0.8rem; letter-spacing: 1px;">ADD SUBSCRIPTION</div>
+                <div style="font-size: 0.65rem; color: var(--text-muted); margin-top: 2px;">opens your vpn app with your key ready</div>
             </div>
-            <div style="background: #333; padding: 10px 14px; border-radius: 8px; font-size: 1.1rem; font-weight: bold;">+</div>
+            <div class="add-sub-btn">+</div>
         </a>
     </div>
 
+    <!-- 3. FEATURES TAB -->
     <div id="features" class="content-section">
-        <div style="font-size: 0.7rem; color: var(--text-muted); margin-bottom: 12px;">CHANGES APPLY FROM YOUR NEXT MATCH</div>
+        <div style="font-size: 0.65rem; color: var(--text-muted); margin-bottom: 15px; letter-spacing: 0.5px;">changes apply from your next match</div>
 
         <div class="card">
             <div class="feature-row">
@@ -344,7 +379,7 @@ app.get('/', (req, res) => {
                 </div>
                 <label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
             </div>
-            <div style="font-size: 0.65rem; color: var(--text-muted); margin: 10px 0 4px 0;">MARK STYLE</div>
+            <div style="font-size: 0.6rem; color: var(--text-muted); margin: 12px 0 6px 0; letter-spacing: 0.5px;">MARK STYLE</div>
             <div class="style-grid">
                 <div class="style-btn active">DRAKE</div>
                 <div class="style-btn">DREAM</div>
@@ -360,33 +395,33 @@ app.get('/', (req, res) => {
         <div class="card">
             <div class="feature-row">
                 <div>
-                    <div class="feature-title">02 AIMPOINT <span style="background:#222; padding: 2px 5px; font-size: 0.55rem; border-radius: 4px; border:1px solid #444;">NEW</span></div>
-                    <div class="feature-desc">moves your aim from chest to head. slide to choose how far.</div>
+                    <div class="feature-title">02 AIMPOINT <span style="background:#1c1c1c; padding: 2px 6px; font-size: 0.55rem; border-radius: 3px; border:1px solid #333; font-weight:normal;">NEW</span></div>
+                    <div class="feature-desc">moves your aim from the chest toward the head. slide to choose how far.</div>
                 </div>
                 <label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
             </div>
-            <div style="display:flex; justify-content:space-between; margin-top:12px; font-size: 0.75rem; color:#888;">
-                <span>AIM HEIGHT</span>
-                <span style="color:#ff4d4d; font-weight:bold; font-size:1rem;">100%</span>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:15px; font-size: 0.75rem;">
+                <span style="color:var(--text-muted); font-size:0.6rem; letter-spacing:1px;">AIM HEIGHT</span>
+                <span style="color:#ff4d4d; font-weight:900; font-size:1.1rem; letter-spacing:1px;">100%</span>
             </div>
-            <input type="range" min="0" max="100" value="100" style="width:100%; margin-top:8px; accent-color:#fff;">
+            <input type="range" min="0" max="100" value="100" style="width:100%; margin-top:10px; accent-color:#fff;">
         </div>
 
         <div class="card">
             <div class="feature-row">
                 <div>
                     <div class="feature-title">03 AIM LAG</div>
-                    <div class="feature-desc">freezes enemy for a moment while firing or scoping.</div>
+                    <div class="feature-desc">freezes the enemy for a moment while you fire or scope, so they're easier to hit.</div>
                 </div>
                 <label class="switch"><input type="checkbox"><span class="slider"></span></label>
             </div>
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px; background:#0a0a0a; padding:10px; border-radius:8px; border:1px solid #222;">
-                <span style="font-size:0.75rem; color:var(--text-muted);">when firing</span>
-                <label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:12px; background:#0a0a0a; padding:10px 14px; border-radius:4px; border:1px solid #222;">
+                <span style="font-size:0.7rem; color:var(--text-muted);">when firing</span>
+                <label class="switch" style="width:36px; height:20px;"><input type="checkbox" checked><span class="slider"></span></label>
             </div>
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px; background:#0a0a0a; padding:10px; border-radius:8px; border:1px solid #222;">
-                <span style="font-size:0.75rem; color:var(--text-muted);">when scoping</span>
-                <label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px; background:#0a0a0a; padding:10px 14px; border-radius:4px; border:1px solid #222;">
+                <span style="font-size:0.7rem; color:var(--text-muted);">when scoping</span>
+                <label class="switch" style="width:36px; height:20px;"><input type="checkbox" checked><span class="slider"></span></label>
             </div>
         </div>
 
@@ -398,12 +433,12 @@ app.get('/', (req, res) => {
                 </div>
                 <label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
             </div>
-            <div style="display:flex; justify-content:space-between; margin-top:12px; font-size: 0.75rem; color:#888;">
-                <span>WALL ANGLE</span>
-                <span style="color:#fff; font-weight:bold; font-size:1rem;">180°</span>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:15px;">
+                <span style="color:var(--text-muted); font-size:0.6rem; letter-spacing:1px;">WALL ANGLE</span>
+                <span style="color:#fff; font-weight:900; font-size:1.1rem;">180°</span>
             </div>
-            <input type="range" min="-90" max="180" value="180" style="width:100%; margin-top:8px; accent-color:#fff;">
-            <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:6px; margin-top:10px;">
+            <input type="range" min="-90" max="180" value="180" style="width:100%; margin-top:10px; accent-color:#fff;">
+            <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:6px; margin-top:12px;">
                 <div class="style-btn">-90°</div>
                 <div class="style-btn">0°</div>
                 <div class="style-btn">+90°</div>
@@ -415,46 +450,59 @@ app.get('/', (req, res) => {
             <div class="feature-row">
                 <div>
                     <div class="feature-title">05 FAST REVIVE</div>
-                    <div class="feature-desc">picks up knocked teammate in about 0.1 s instead of 3 s.</div>
+                    <div class="feature-desc">picks up a knocked teammate in about 0.1 s instead of 3 s.</div>
                 </div>
                 <label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
             </div>
         </div>
     </div>
 
+    <!-- 4. MANAGE TAB -->
     <div id="manage" class="content-section">
         <div class="card">
-            <div style="font-size: 0.65rem; color: var(--text-muted);">THIS DEVICE</div>
-            <div style="font-size: 1.1rem; font-weight: bold; margin: 4px 0; letter-spacing: 1px;">${info.device}</div>
-            <div style="font-size: 0.7rem; color: var(--text-muted);">${info.os} • Active Session</div>
-            <div style="margin-top: 12px; background: #0a0a0a; padding: 8px; border-radius: 6px; text-align: center; font-size: 0.7rem; color: #34d399; border: 1px solid #113f2d;">
-                LOCKED TO THIS KEY • VALID
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                <span style="font-size: 0.6rem; color: var(--text-muted); letter-spacing: 1px;">THIS DEVICE</span>
+                <span style="background: #1c1c1c; padding: 3px 8px; border-radius: 3px; font-size: 0.55rem; color: #aaa; border: 1px solid #333; font-weight: bold; letter-spacing: 0.5px;">LOCKED TO THIS KEY</span>
+            </div>
+            <div style="font-size: 1.15rem; font-weight: 900; margin: 4px 0; letter-spacing: 1px;">${info.device}</div>
+            <div style="font-size: 0.65rem; color: var(--text-muted);">${info.os}</div>
+            <div style="font-size: 0.6rem; color: #444; font-family: monospace; margin-top: 4px;">${info.code}</div>
+            <div style="margin-top: 15px; background: #0a0a0a; padding: 10px; border-radius: 4px; text-align: center; font-size: 0.65rem; color: var(--text-muted); border: 1px solid #222; letter-spacing: 1px;">
+                NEXT RESET 5 NOV 2026
             </div>
         </div>
 
         <div class="card">
-            <div style="font-size: 0.65rem; color: var(--text-muted); margin-bottom: 4px;">UPDATE NOTES</div>
-            <div style="font-weight: bold; font-size: 0.8rem; margin-bottom: 4px;">V1.7 AIM LAG IS BACK, NEXT TO AIMPOINT</div>
-            <div style="font-size: 0.7rem; color: var(--text-muted);">aim lag is back, sitting under aimpoint. run it with aimpoint or on its own.</div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                <span style="font-size: 0.6rem; color: var(--text-muted); letter-spacing: 1px;">UPDATE NOTES</span>
+                <span style="font-size: 0.6rem; color: var(--text-muted); cursor: pointer;">ALL UPDATES ↗</span>
+            </div>
+            <div style="font-weight: 900; font-size: 0.8rem; margin-bottom: 6px; letter-spacing: 0.5px;">V1.7 AIM LAG IS BACK, NEXT TO AIMPOINT</div>
+            <div style="font-size: 0.68rem; color: var(--text-muted); line-height: 1.5;">aim lag is back, sitting under aimpoint. run it with aimpoint or on its own. every feature now carries a shor...</div>
         </div>
 
-        <div class="card" style="display: flex; justify-content: space-between; align-items: center; cursor: pointer;" onclick="window.open('https://discord.com', '_blank')">
-            <div>
-                <div style="font-weight: bold; font-size: 0.8rem;">DISCORD</div>
-                <div style="font-size: 0.7rem; color: var(--text-muted);">join community server</div>
+        <div class="card" style="display: flex; justify-content: space-between; align-items: center; cursor: pointer;" onclick="window.open('https://t.me', '_blank')">
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <div style="background: #222; width: 32px; height: 32px; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 0.8rem;">D</div>
+                <div>
+                    <div style="font-weight: 900; font-size: 0.8rem; letter-spacing: 1px;">DISCORD</div>
+                </div>
             </div>
-            <span>↗</span>
+            <span style="color: var(--text-muted);">↗</span>
         </div>
 
         <div class="card" style="display: flex; justify-content: space-between; align-items: center; cursor: pointer;" onclick="window.open('https://whatsapp.com', '_blank')">
-            <div>
-                <div style="font-weight: bold; font-size: 0.8rem;">WHATSAPP</div>
-                <div style="font-size: 0.7rem; color: var(--text-muted);">official updates group</div>
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <div style="background: #222; width: 32px; height: 32px; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 0.8rem;">W</div>
+                <div>
+                    <div style="font-weight: 900; font-size: 0.8rem; letter-spacing: 1px;">WHATSAPP</div>
+                </div>
             </div>
-            <span>↗</span>
+            <span style="color: var(--text-muted);">↗</span>
         </div>
     </div>
 
+    <!-- NAVIGATION -->
     <nav id="bottomNav">
         <button class="nav-item active" onclick="switchTab('home')">
             <div>🏠</div>HOME
@@ -483,15 +531,15 @@ app.get('/', (req, res) => {
             const key = document.getElementById('keyInput').value.trim();
             const err = document.getElementById('errorMsg');
             
-            if(key === 'DRAKE-1111-2222-3333' || key.startsWith('DRAKE-')) {
+            if(key === 'DRAKE-E9E0-1A89-A3E7' || key.startsWith('DRAKE-')) {
                 err.style.display = 'none';
                 document.getElementById('login-screen').classList.remove('active');
                 document.getElementById('bottomNav').style.display = 'flex';
-                document.getElementById('activeKeyText').innerText = key;
+                document.getElementById('displayKeyText').innerText = key;
                 switchTab('home');
             } else {
                 err.style.display = 'block';
-                err.innerText = 'Invalid Key! Use key: DRAKE-1111-2222-3333';
+                err.innerText = 'Invalid Key! Please use: DRAKE-E9E0-1A89-A3E7';
             }
         }
 
