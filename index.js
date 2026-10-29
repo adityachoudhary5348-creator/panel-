@@ -299,11 +299,12 @@ const htmlPage = `<!DOCTYPE html>
         }
 
         function openVpnApp() {
-            navigator.clipboard.writeText(currentKey).then(() => {
-                alert("Key copied! Opening Happ Proxy Utility...");
-                window.location.href = "happ://import/" + currentKey; 
+            const subUrl = window.location.origin + "/sub/" + currentKey;
+            navigator.clipboard.writeText(subUrl).then(() => {
+                alert("Subscription link copied! Opening Happ Proxy Utility...");
+                window.location.href = "happ://import/" + encodeURIComponent(subUrl); 
             }).catch(err => {
-                alert("Could not copy key automatically.");
+                alert("Could not copy link automatically.");
             });
         }
 
@@ -476,6 +477,20 @@ const adminPage = `<!DOCTYPE html>
 </html>`;
 
 app.get('/', (req, res) => { res.send(htmlPage); });
+
+// Subscription route for Happ app import
+app.get('/sub/:key', (req, res) => {
+  const { key } = req.params;
+  const keyRow = db.prepare('SELECT * FROM keys WHERE key_code = ?').get(key);
+  
+  if (!keyRow || keyRow.status !== 'active') {
+    return res.status(403).send('Invalid or expired key');
+  }
+
+  const proxyConfig = `vless://drake-${key}@127.0.0.1:443?encryption=none&security=none&type=tcp#Drake-Key-${key}`;
+  const encodedConfig = Buffer.from(proxyConfig).toString('base64');
+  res.send(encodedConfig);
+});
 
 app.post('/api/verify', (req, res) => {
   const { key, deviceInfo } = req.body;
