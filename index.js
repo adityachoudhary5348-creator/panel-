@@ -281,6 +281,7 @@ const htmlPage = `<!DOCTYPE html>
             <button class="nav-item" onclick="switchTab('manage', this)"><div>⚙️</div>MANAGE</button>
         </div>
     </div>
+
     <script>
         let currentKey = "";
         let expiryTimeMs = 0;
