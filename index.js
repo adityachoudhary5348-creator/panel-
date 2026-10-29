@@ -7,7 +7,34 @@ const PORT = process.env.PORT || 3000;
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+function getDeviceInfo(userAgent) {
+    let device = "Unknown Device";
+    let os = "Unknown OS";
+    
+    if (/android/i.test(userAgent)) {
+        device = "Android Device";
+        os = "Android";
+    } else if (/iphone/i.test(userAgent)) {
+        device = "iPhone";
+        os = "iOS";
+    } else if (/ipad/i.test(userAgent)) {
+        device = "iPad";
+        os = "iOS";
+    } else if (/windows/i.test(userAgent)) {
+        device = "Windows PC";
+        os = "Windows";
+    } else if (/macintosh/i.test(userAgent)) {
+        device = "Macbook / Mac";
+        os = "MacOS";
+    }
+    
+    return { device, os };
+}
+
 app.get('/', (req, res) => {
+  const ua = req.headers['user-agent'] || '';
+  const info = getDeviceInfo(ua);
+
   res.send(`
     <!DOCTYPE html>
     <html lang="en">
@@ -131,7 +158,6 @@ app.get('/', (req, res) => {
                 margin-top: 20px;
                 line-height: 1.5;
             }
-            /* Nav bar */
             nav {
                 position: fixed;
                 bottom: 0;
@@ -161,7 +187,6 @@ app.get('/', (req, res) => {
                 font-size: 18px;
                 margin-bottom: 3px;
             }
-            /* Features styles */
             .feature-row {
                 display: flex;
                 justify-content: space-between;
@@ -195,7 +220,6 @@ app.get('/', (req, res) => {
             }
             input:checked + .slider { background-color: #fff; }
             input:checked + .slider:before { transform: translateX(20px); background-color: #000; }
-            
             .style-grid {
                 display: grid;
                 grid-template-columns: repeat(4, 1fr);
@@ -238,7 +262,7 @@ app.get('/', (req, res) => {
             <div class="card">
                 <div style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 5px;">■ ACCESS KEY</div>
                 <div class="input-group">
-                    <input type="text" id="keyInput" placeholder="PHTM-XXXX-XXXX-XXXX" value="PHTM-E9E0-1A89-A3E7">
+                    <input type="text" id="keyInput" placeholder="DRAKE-XXXX-XXXX-XXXX" value="DRAKE-E9E0-1A89-A3E7">
                     <button class="btn-action" onclick="navigator.clipboard.writeText(document.getElementById('keyInput').value)">PASTE</button>
                 </div>
             </div>
@@ -255,7 +279,6 @@ app.get('/', (req, res) => {
         <div id="features" class="content-section">
             <div style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 15px;">CHANGES APPLY FROM YOUR NEXT MATCH</div>
 
-            <!-- Feature 1 -->
             <div class="card">
                 <div class="feature-row">
                     <div>
@@ -277,7 +300,6 @@ app.get('/', (req, res) => {
                 </div>
             </div>
 
-            <!-- Feature 2 -->
             <div class="card">
                 <div class="feature-row">
                     <div>
@@ -298,10 +320,10 @@ app.get('/', (req, res) => {
         <div id="manage" class="content-section">
             <div class="card">
                 <div style="font-size: 0.7rem; color: var(--text-muted);">THIS DEVICE</div>
-                <div style="font-size: 1.2rem; font-weight: bold; margin: 5px 0; letter-spacing: 1px;">IPHONE 11 PRO MAX</div>
-                <div style="font-size: 0.75rem; color: var(--text-muted);">iOS • 2zd29jp7697olnld</div>
+                <div style="font-size: 1.2rem; font-weight: bold; margin: 5px 0; letter-spacing: 1px;">${info.device}</div>
+                <div style="font-size: 0.75rem; color: var(--text-muted);">${info.os} • User Session Active</div>
                 <div style="margin-top: 15px; background: #0a0a0a; padding: 10px; border-radius: 6px; text-align: center; font-size: 0.75rem; color: var(--text-muted); border: 1px solid #222;">
-                    LOCKED TO THIS KEY • NEXT RESET 5 NOV 2026
+                    LOCKED TO THIS KEY • SECURE SESSION
                 </div>
             </div>
 
