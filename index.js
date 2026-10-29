@@ -8,7 +8,6 @@ const PORT = process.env.PORT || 3000;
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Initialize SQLite Database for 100 valid keys
 const db = new Database('drake_panel.db');
 db.prepare(`
   CREATE TABLE IF NOT EXISTS keys (
@@ -19,7 +18,6 @@ db.prepare(`
   )
 `).run();
 
-// Pre-populate 100 valid keys if empty
 const count = db.prepare('SELECT COUNT(*) as c FROM keys').get().c;
 if (count === 0) {
   const durations = ['1 Hour', '3 Hours', '6 Hours', '12 Hours', '1 Day'];
@@ -198,7 +196,7 @@ app.get('/', (req, res) => {
             width: 100%;
             background: #0e0e0e;
             border-top: 1px solid var(--border-color);
-            display: flex;
+            display: none;
             justify-content: space-around;
             padding: 10px 0;
             z-index: 100;
@@ -291,8 +289,7 @@ app.get('/', (req, res) => {
         <span>EN</span>
     </header>
 
-    <!-- HOME TAB -->
-    <div id="home" class="content-section active">
+    <div id="login-screen" class="content-section active">
         <div class="hero">
             <div class="skull-logo">💀</div>
             <h1>DRAKE PANEL</h1>
@@ -323,8 +320,45 @@ app.get('/', (req, res) => {
             your time starts when you connect.
         </div>
     </div>
+    <div id="home" class="content-section">
+        <div class="hero" style="padding: 10px 0;">
+            <div class="skull-logo">💀</div>
+            <div style="font-size: 1.8rem; font-weight: bold; letter-spacing: 2px; margin-top: 5px;" id="timeLeftDisplay">2H 11M</div>
+            <div style="font-size: 0.65rem; color: var(--text-muted); letter-spacing: 1px; margin-top: 2px;">TIME LEFT</div>
+        </div>
 
-    <!-- FEATURES TAB -->
+        <div class="card">
+            <div style="font-size: 0.65rem; color: var(--text-muted); margin-bottom: 4px;">KEY</div>
+            <div style="display: flex; justify-content: space-between; align-items: center; background: #0a0a0a; padding: 10px; border-radius: 8px; border: 1px solid #333;">
+                <span id="activeKeyText" style="font-family: monospace; font-size: 0.85rem; color: #fff;">-</span>
+                <button class="btn-action" onclick="navigator.clipboard.writeText(document.getElementById('activeKeyText').innerText)">COPY</button>
+            </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 15px;">
+            <div class="card" style="margin: 0; padding: 12px; text-align: center;">
+                <div style="font-size: 0.6rem; color: var(--text-muted);">ACTIVATED</div>
+                <div style="font-size: 0.75rem; font-weight: bold; margin-top: 4px;">29 Oct 2026</div>
+            </div>
+            <div class="card" style="margin: 0; padding: 12px; text-align: center;">
+                <div style="font-size: 0.6rem; color: var(--text-muted);">EXPIRES</div>
+                <div id="expiryDateText" style="font-size: 0.75rem; font-weight: bold; margin-top: 4px;">30 Oct 2026</div>
+            </div>
+            <div class="card" style="margin: 0; padding: 12px; text-align: center;">
+                <div style="font-size: 0.6rem; color: var(--text-muted);">DEVICE</div>
+                <div style="font-size: 0.75rem; font-weight: bold; margin-top: 4px;">${info.device}</div>
+            </div>
+        </div>
+
+        <a href="#" onclick="openVpnApp(event)" class="add-sub-card">
+            <div>
+                <div style="font-weight: bold; font-size: 0.85rem; letter-spacing: 1px;">ADD SUBSCRIPTION</div>
+                <div style="font-size: 0.7rem; color: var(--text-muted); margin-top: 2px;">opens your vpn app with your key ready</div>
+            </div>
+            <div style="background: #333; padding: 10px 14px; border-radius: 8px; font-size: 1.1rem; font-weight: bold;">+</div>
+        </a>
+    </div>
+
     <div id="features" class="content-section">
         <div style="font-size: 0.7rem; color: var(--text-muted); margin-bottom: 12px;">CHANGES APPLY FROM YOUR NEXT MATCH</div>
 
@@ -414,7 +448,6 @@ app.get('/', (req, res) => {
         </div>
     </div>
 
-    <!-- MANAGE TAB -->
     <div id="manage" class="content-section">
         <div class="card">
             <div style="font-size: 0.65rem; color: var(--text-muted);">THIS DEVICE</div>
@@ -448,8 +481,7 @@ app.get('/', (req, res) => {
         </div>
     </div>
 
-    <!-- NAVIGATION -->
-    <nav>
+    <nav id="bottomNav">
         <button class="nav-item active" onclick="switchTab('home')">
             <div>🏠</div>HOME
         </button>
@@ -492,10 +524,13 @@ app.get('/', (req, res) => {
 
             if(data.success) {
                 err.style.display = 'none';
-                switchTab('features');
+                document.getElementById('login-screen').classList.remove('active');
+                document.getElementById('bottomNav').style.display = 'flex';
+                document.getElementById('activeKeyText').innerText = key;
+                switchTab('home');
             } else {
                 err.style.display = 'block';
-                err.innerText = 'Invalid Key! Please enter a valid 100% active key.';
+                err.innerText = 'Invalid Key! Please enter a valid active key.';
             }
         }
 
