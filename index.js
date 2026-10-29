@@ -26,7 +26,6 @@ db.exec(`
   );
 `);
 
-// Default Admin create karein (Username: admin, Password: admin123)
 const adminCheck = db.prepare('SELECT * FROM admins WHERE username = ?').get('admin');
 if (!adminCheck) {
   db.prepare('INSERT INTO admins (username, password) VALUES (?, ?)').run('admin', 'admin123');
@@ -201,7 +200,7 @@ const htmlPage = `<!DOCTYPE html>
             if(data.success) {
                 currentKey = key;
                 loadDashboardData(data);
-                document.getElementById('login-screen').classList.remove('active');
+                document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
                 document.getElementById('home-screen').classList.add('active');
                 document.getElementById('bottom-nav').style.display = 'flex';
                 document.getElementById('page-title').innerText = "HOME";
