@@ -56,14 +56,17 @@ const htmlPage = `<!DOCTYPE html>
             --accent-red: #ff5252;
         }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: monospace, sans-serif; }
-        body { background-color: var(--bg-color); color: var(--text-main); display: flex; justify-content: center; align-items: center; min-height: 100vh; overflow: hidden; }
+        body { background-color: var(--bg-color); color: var(--text-main); display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
         .phone-frame { width: 100%; max-width: 420px; height: 100vh; max-height: 850px; background: var(--bg-color); border: 2px solid var(--border-color); display: flex; flex-direction: column; position: relative; overflow: hidden; box-shadow: 0 0 20px rgba(0,0,0,0.8); }
         .top-bar { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; border-bottom: 1px solid var(--border-color); flex-shrink: 0; }
         .top-bar h1 { font-size: 16px; letter-spacing: 2px; }
         .top-actions { display: flex; gap: 8px; align-items: center; }
         .icon-btn { background: var(--card-bg); border: 1px solid var(--border-color); color: var(--text-main); padding: 5px 10px; font-size: 11px; cursor: pointer; border-radius: 4px; text-decoration: none; }
-        .content { flex: 1; padding: 15px; padding-bottom: 90px; overflow-y: auto; height: 100%; }
-        .screen { display: none; height: 100%; }
+        
+        /* Fixed scrolling issue here */
+        .content { flex: 1; padding: 15px; padding-bottom: 100px; overflow-y: scroll; -webkit-overflow-scrolling: touch; }
+        
+        .screen { display: none; }
         .screen.active { display: block; }
         
         .login-container { text-align: center; margin-top: 20px; }
@@ -195,7 +198,8 @@ const htmlPage = `<!DOCTYPE html>
                     </div>
                 </div>
 
-                <div class="sub-box">
+                <!-- Add Subscription Button with VPN Trigger -->
+                <div class="sub-box" onclick="openVpnApp()" style="cursor: pointer;">
                     <div>
                         <h3>ADD SUBSCRIPTION</h3>
                         <p>opens your vpn app with your key ready</p>
@@ -327,6 +331,17 @@ const htmlPage = `<!DOCTYPE html>
         function copyKeyText() {
             navigator.clipboard.writeText(currentKey);
             alert("Key copied to clipboard!");
+        }
+
+        // Function to copy key and trigger VPN app
+        function openVpnApp() {
+            navigator.clipboard.writeText(currentKey).then(() => {
+                alert("Key copied! Opening VPN app...");
+                // Yeh scheme aapke custom vpn app ya happ proxy app ko open karegi
+                window.location.href = "happ://import/" + currentKey; 
+            }).catch(err => {
+                alert("Could not copy key automatically.");
+            });
         }
 
         function selectStyle(el) {
