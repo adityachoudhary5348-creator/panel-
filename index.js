@@ -2,9 +2,11 @@ const express = require('express');
 const Database = require('better-sqlite3');
 const helmet = require('helmet');
 const session = require('express-session');
+const path = require('path');
 
 const app = express();
-const db = new Database('drake_panel.db');
+const dbPath = path.join(__dirname, 'drake_panel.db');
+const db = new Database(dbPath);
 
 // Security & Middlewares
 app.use(helmet());
@@ -17,14 +19,18 @@ app.use(session({
 }));
 
 // Database Table Creation
-db.prepare(`
-  CREATE TABLE IF NOT EXISTS keys (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    key_code TEXT UNIQUE,
-    status TEXT DEFAULT 'active',
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-  )
-`).run();
+try {
+  db.prepare(`
+    CREATE TABLE IF NOT EXISTS keys (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      key_code TEXT UNIQUE,
+      status TEXT DEFAULT 'active',
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    )
+  `).run();
+} catch (err) {
+  console.error("DB Table Creation Error:", err);
+}
 
 // Root URL redirect to Admin page
 app.get('/', (req, res) => {
@@ -33,7 +39,14 @@ app.get('/', (req, res) => {
 
 // Admin Panel & Key Generator
 app.get('/admin', (req, res) => {
-  const keys = db.prepare('SELECT * FROM keys ORDER BY id DESC').all();
+  let keys = [];
+  let errorMessage = '';
+  
+  try {
+    keys = db.prepare('SELECT * FROM keys ORDER BY id DESC').all();
+  } catch (err) {
+    errorMessage = err.message;
+  }
   
   let keysHtml = keys.map(k => `<li style="padding: 5px; border-bottom: 1px solid #333;"><code>${k.key_code}</code> &nbsp; [<span style="color: #4CAF50;">${k.status}</span>]</li>`).join('');
 
@@ -45,6 +58,7 @@ app.get('/admin', (req, res) => {
       </head>
       <body style="font-family: Arial; background: #121212; color: #fff; text-align: center; padding: 20px;">
         <h2>Drake Panel Key Generator</h2>
+        ${errorMessage ? `<p style="color: red;">Error: ${errorMessage}</p>` : ''}
         <form action="/admin/generate" method="POST">
           <button type="submit" style="padding: 12px 25px; background: #6200ee; color: #fff; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; font-weight: bold;">Generate 50 Phantom Keys</button>
         </form>
@@ -62,33 +76,42 @@ app.get('/admin', (req, res) => {
 
 // Generate Keys Route
 app.post('/admin/generate', (req, res) => {
-  const insert = db.prepare('INSERT OR IGNORE INTO keys (key_code, status) VALUES (?, ?)');
-  
-  for (let i = 1; i <= 50; i++) {
-    const randomCode = `DRKE-${Math.floor(1000 + Math.random() * 9000)}-S0FF-N${Math.floor(1000 + Math.random() * 9000)}`;
-    insert.run(randomCode, 'active');
+  try {
+    const insert = db.prepare('INSERT OR IGNORE INTO keys (key_code, status) VALUES (?, ?)');
+    for (let i = 1; i <= 50; i++) {
+      const randomCode = `DRKE-${Math.floor(1000 + Math.random() * 9000)}-S0FF-N${Math.floor(1000 + Math.random() * 9000)}`;
+      insert.run(randomCode, 'active');
+    }
+  } catch (err) {
+    console.error("Key Generation Error:", err);
   }
   
   res.redirect('/admin');
 });
 
-// Default Subscription Route (Handles direct domain requests from Happ app)
+// Default Subscription Route (with TLS enabled)
 app.get('/sub', (req, res) => {
-  const directConfig = `vless://drake-default@panel-1-i3ow.onrender.com:443?encryption=none&security=none&type=tcp#Drake-Default-Key`;
+  const directConfig = `vless://drake-default@panel-1-i3ow.onrender.com:443?encryption=none&security=tls&type=tcp#Drake-Default-Key`;
   const encodedConfig = Buffer.from(directConfig).toString('base64');
   res.send(encodedConfig);
 });
 
-// Specific Key Subscription Route for Happ Proxy App
+// Specific Key Subscription Route (with TLS enabled)
 app.get('/sub/:key', (req, res) => {
   const { key } = req.params;
-  const keyRow = db.prepare('SELECT * FROM keys WHERE key_code = ?').get(key);
+  let keyRow = null;
+  
+  try {
+    keyRow = db.prepare('SELECT * FROM keys WHERE key_code = ?').get(key);
+  } catch (err) {
+    console.error("DB Query Error:", err);
+  }
   
   if (!keyRow || keyRow.status !== 'active') {
     return res.status(403).send('Invalid or expired key');
   }
 
-  const directConfig = `vless://drake-${key}@panel-1-i3ow.onrender.com:443?encryption=none&security=none&type=tcp#Drake-Key-${key}`;
+  const directConfig = `vless://drake-${key}@panel-1-i3ow.onrender.com:443?encryption=none&security=tls&type=tcp#Drake-Key-${key}`;
   const encodedConfig = Buffer.from(directConfig).toString('base64');
   res.send(encodedConfig);
 });
@@ -98,4 +121,3 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Drake Panel running on port ${PORT}`);
 });
-
