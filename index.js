@@ -53,7 +53,7 @@ app.post('/admin/generate', (req, res) => {
   res.send('<h3>50 Phantom Keys Generated Successfully!</h3><a href="/admin">Go Back</a>');
 });
 
-// Subscription Route for Happ Proxy App (Bypassing local routing errors)
+// Subscription Route for Happ Proxy App (Updated with your actual Render domain)
 app.get('/sub/:key', (req, res) => {
   const { key } = req.params;
   const keyRow = db.prepare('SELECT * FROM keys WHERE key_code = ?').get(key);
@@ -62,8 +62,8 @@ app.get('/sub/:key', (req, res) => {
     return res.status(403).send('Invalid or expired key');
   }
 
-  // Direct configuration format to prevent game version fetch errors
-  const directConfig = `vless://drake-${key}@your-render-domain.onrender.com:443?encryption=none&security=none&type=tcp#Drake-Key-${key}`;
+  // Direct configuration format using your panel-1-i3ow.onrender.com domain
+  const directConfig = `vless://drake-${key}@panel-1-i3ow.onrender.com:443?encryption=none&security=none&type=tcp#Drake-Key-${key}`;
   
   const encodedConfig = Buffer.from(directConfig).toString('base64');
   res.send(encodedConfig);
