@@ -32,7 +32,7 @@ try {
   console.error("DB Table Creation Error:", err);
 }
 
-// Root URL redirect to Admin page
+// Root URL opens Admin Panel for browser
 app.get('/', (req, res) => {
   res.redirect('/admin');
 });
@@ -89,14 +89,22 @@ app.post('/admin/generate', (req, res) => {
   res.redirect('/admin');
 });
 
-// Default Subscription Route (with TLS enabled)
+// Auto-Sub Route (Automatically grabs the latest active key from database)
 app.get('/sub', (req, res) => {
-  const directConfig = `vless://drake-default@panel-1-i3ow.onrender.com:443?encryption=none&security=tls&type=tcp#Drake-Default-Key`;
-  const encodedConfig = Buffer.from(directConfig).toString('base64');
-  res.send(encodedConfig);
+  try {
+    const keyRow = db.prepare("SELECT * FROM keys WHERE status = 'active' ORDER BY id DESC LIMIT 1").get();
+    const key = keyRow ? keyRow.key_code : 'DRKE-DEFAULT-9999';
+
+    const directConfig = `vless://drake-${key}@panel-1-i3ow.onrender.com:443?encryption=none&security=tls&type=tcp#Drake-Key-${key}`;
+    const encodedConfig = Buffer.from(directConfig).toString('base64');
+    return res.send(encodedConfig);
+  } catch (err) {
+    const fallbackConfig = `vless://drake-fallback@panel-1-i3ow.onrender.com:443?encryption=none&security=tls&type=tcp#Drake-Fallback`;
+    return res.send(Buffer.from(fallbackConfig).toString('base64'));
+  }
 });
 
-// Specific Key Subscription Route (with TLS enabled)
+// Specific Key Subscription Route
 app.get('/sub/:key', (req, res) => {
   const { key } = req.params;
   let keyRow = null;
