@@ -171,13 +171,17 @@ const htmlPage = `<!DOCTYPE html>
                     <div class="info-card"><span>EXPIRES</span><strong id="info-expires">-</strong></div>
                     <div class="info-card"><span>DEVICE</span><strong id="info-device">-</strong></div>
                 </div>
-                <div class="sub-box" onclick="openVpnApp()" style="cursor: pointer;">
-                    <div>
-                        <h3>ADD SUBSCRIPTION</h3>
-                        <p>opens your vpn app with your key ready</p>
+                
+                <!-- Direct Anchor Link for App Launch -->
+                <a href="happ://import/" id="happ-link" style="text-decoration: none; color: inherit; display: block;" onclick="updateVpnLink()">
+                    <div class="sub-box" style="cursor: pointer;">
+                        <div>
+                            <h3>ADD SUBSCRIPTION</h3>
+                            <p>opens your vpn app with your key ready</p>
+                        </div>
+                        <button class="add-btn">+</button>
                     </div>
-                    <button class="add-btn">+</button>
-                </div>
+                </a>
             </div>
 
             <div id="features-screen" class="screen">
@@ -298,9 +302,9 @@ const htmlPage = `<!DOCTYPE html>
             alert("Key copied to clipboard!");
         }
 
-        function openVpnApp() {
+        function updateVpnLink() {
             const subUrl = window.location.origin + "/sub/" + currentKey;
-            window.location.href = "happ://import/" + encodeURIComponent(subUrl);
+            document.getElementById('happ-link').href = "happ://import/" + encodeURIComponent(subUrl);
         }
 
         function selectStyle(el) {
