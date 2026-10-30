@@ -301,10 +301,9 @@ const htmlPage = `<!DOCTYPE html>
         function openVpnApp() {
             const subUrl = window.location.origin + "/sub/" + currentKey;
             navigator.clipboard.writeText(subUrl).then(() => {
-                alert("Subscription link copied! Opening Happ Proxy Utility...");
                 window.location.href = "happ://import/" + encodeURIComponent(subUrl); 
             }).catch(err => {
-                alert("Could not copy link automatically.");
+                console.log("Clipboard error");
             });
         }
 
@@ -532,7 +531,7 @@ app.post('/api/verify', (req, res) => {
     success: true,
     key: updatedRow.key_code,
     activated: updatedRow.activated_date,
-    expires: updatedRow.expiry_date,
+    expires: updatedRow.expires,
     device: updatedRow.device_info || deviceInfo,
     rawExpiry: rawExpiryDate.toISOString()
   });
