@@ -172,7 +172,6 @@ const htmlPage = `<!DOCTYPE html>
                     <div class="info-card"><span>DEVICE</span><strong id="info-device">-</strong></div>
                 </div>
                 
-                <!-- Direct Onclick Function Trigger -->
                 <div class="sub-box" onclick="openVpnApp()" style="cursor: pointer;">
                     <div>
                         <h3>ADD SUBSCRIPTION</h3>
@@ -302,7 +301,12 @@ const htmlPage = `<!DOCTYPE html>
 
         function openVpnApp() {
             const subUrl = window.location.origin + "/sub/" + currentKey;
-            window.location.href = "happ://import/" + encodeURIComponent(subUrl);
+            navigator.clipboard.writeText(subUrl).then(() => {
+                alert("Subscription link copied! Opening Happ Proxy Utility...");
+                window.location.href = "happ://import/" + encodeURIComponent(subUrl); 
+            }).catch(err => {
+                alert("Could not copy link automatically.");
+            });
         }
 
         function selectStyle(el) {
