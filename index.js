@@ -26,27 +26,41 @@ db.prepare(`
   )
 `).run();
 
-// Root URL redirect to Admin page (fixes Cannot GET / error)
+// Root URL redirect to Admin page
 app.get('/', (req, res) => {
   res.redirect('/admin');
 });
 
-// Admin Login Page
+// Admin Panel & Key Generator with Key List View
 app.get('/admin', (req, res) => {
+  const keys = db.prepare('SELECT * FROM keys ORDER BY id DESC').all();
+  
+  let keysHtml = keys.map(k => `<li style="padding: 5px; border-bottom: 1px solid #333;"><code>${k.key_code}</code> &nbsp; [<span style="color: #4CAF50;">${k.status}</span>]</li>`).join('');
+
   res.send(`
     <html>
-      <head><title>Drake Panel Admin</title></head>
-      <body style="font-family: Arial; background: #121212; color: #fff; text-align: center; padding-top: 50px;">
+      <head>
+        <title>Drake Panel Admin</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      </head>
+      <body style="font-family: Arial; background: #121212; color: #fff; text-align: center; padding: 20px;">
         <h2>Drake Panel Key Generator</h2>
         <form action="/admin/generate" method="POST">
-          <button type="submit" style="padding: 10px 20px; background: #6200ee; color: #fff; border: none; border-radius: 5px; cursor: pointer;">Generate 50 Phantom Keys</button>
+          <button type="submit" style="padding: 12px 25px; background: #6200ee; color: #fff; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; font-weight: bold;">Generate 50 Phantom Keys</button>
         </form>
+        
+        <h3 style="margin-top: 30px;">Generated Keys (${keys.length}):</h3>
+        <div style="max-width: 400px; margin: 0 auto; max-height: 350px; overflow-y: auto; background: #1e1e1e; border: 1px solid #333; border-radius: 5px; text-align: left; padding: 10px;">
+          <ul style="list-style: none; padding: 0; margin: 0;">
+            ${keysHtml || '<li style="color: #888; text-align: center;">No keys generated yet. Click the button above!</li>'}
+          </ul>
+        </div>
       </body>
     </html>
   `);
 });
 
-// Generate Keys Route
+// Generate Keys Route (Redirects back to admin page to show keys instantly)
 app.post('/admin/generate', (req, res) => {
   const insert = db.prepare('INSERT OR IGNORE INTO keys (key_code, status) VALUES (?, ?)');
   
@@ -55,7 +69,7 @@ app.post('/admin/generate', (req, res) => {
     insert.run(randomCode, 'active');
   }
   
-  res.send('<h3>50 Phantom Keys Generated Successfully!</h3><a href="/admin">Go Back</a>');
+  res.redirect('/admin');
 });
 
 // Subscription Route for Happ Proxy App
@@ -67,7 +81,6 @@ app.get('/sub/:key', (req, res) => {
     return res.status(403).send('Invalid or expired key');
   }
 
-  // Direct configuration format using your panel-1-i3ow.onrender.com domain
   const directConfig = `vless://drake-${key}@panel-1-i3ow.onrender.com:443?encryption=none&security=none&type=tcp#Drake-Key-${key}`;
   
   const encodedConfig = Buffer.from(directConfig).toString('base64');
