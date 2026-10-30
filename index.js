@@ -300,11 +300,7 @@ const htmlPage = `<!DOCTYPE html>
 
         function openVpnApp() {
             const subUrl = window.location.origin + "/sub/" + currentKey;
-            navigator.clipboard.writeText(subUrl).then(() => {
-                window.location.href = "happ://import/" + encodeURIComponent(subUrl); 
-            }).catch(err => {
-                console.log("Clipboard error");
-            });
+            window.location.href = "happ://import/" + encodeURIComponent(subUrl);
         }
 
         function selectStyle(el) {
@@ -531,7 +527,7 @@ app.post('/api/verify', (req, res) => {
     success: true,
     key: updatedRow.key_code,
     activated: updatedRow.activated_date,
-    expires: updatedRow.expires,
+    expires: updatedRow.expiry_date,
     device: updatedRow.device_info || deviceInfo,
     rawExpiry: rawExpiryDate.toISOString()
   });
