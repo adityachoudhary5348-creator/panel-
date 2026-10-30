@@ -1,4 +1,4 @@
- const express = require('express');
+const express = require('express');
 const helmet = require('helmet');
 const session = require('express-session');
 const panelRoutes = require('./routes');
@@ -14,12 +14,7 @@ app.use(session({
   saveUninitialized: true
 }));
 
-// Root Redirect to login
-app.get('/', (req, res) => {
-  res.redirect('/login');
-});
-
-// Load Routes
+// Load all routes
 app.use('/', panelRoutes);
 
 const PORT = process.env.PORT || 3000;
