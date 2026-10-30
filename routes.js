@@ -15,6 +15,11 @@ const isAuthenticated = (req, res, next) => {
   next();
 };
 
+// Root Redirect
+router.get('/', (req, res) => {
+  res.redirect('/login');
+});
+
 // 1. Login Page
 router.get('/login', (req, res) => {
   res.send(`
@@ -24,7 +29,7 @@ router.get('/login', (req, res) => {
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <style>
           body { background: #0b0b0b; color: #fff; font-family: sans-serif; text-align: center; padding: 40px 20px; margin: 0; }
-          h1 { letter-spacing: 2px; font-size: 24px; margin-bottom: 5px; }
+          h2 { letter-spacing: 2px; font-size: 24px; margin-bottom: 5px; }
           p { color: #888; font-size: 13px; margin-bottom: 30px; }
           .box { background: #141414; border: 1px solid #222; padding: 25px; max-width: 350px; margin: 0 auto; border-radius: 8px; }
           input { width: 100%; padding: 12px; background: #1a1a1a; border: 1px solid #333; color: #fff; border-radius: 4px; box-sizing: border-box; font-size: 14px; margin-bottom: 15px; text-transform: uppercase; }
@@ -67,7 +72,7 @@ router.post('/login', (req, res) => {
 router.get('/home', isAuthenticated, (req, res) => {
   const key = req.session.userKey;
   const keyData = db.prepare("SELECT * FROM keys WHERE key_code = ?").get(key);
-  const deviceName = keyData ? keyData.device : 'Unknown Device';
+  const deviceName = keyData ? keyData.device : 'Tecno Spark Go';
 
   res.send(`
     <html>
@@ -85,7 +90,7 @@ router.get('/home', isAuthenticated, (req, res) => {
           .info-card { background: #141414; border: 1px solid #222; padding: 12px; border-radius: 6px; text-align: left; }
           .info-card span { display: block; color: #666; font-size: 10px; margin-bottom: 4px; text-transform: uppercase; }
           .info-card b { font-size: 11px; word-break: break-all; }
-          .nav { position: fixed; bottom: 0; left: 0; width: 100%; background: #111; border-top: 1px solid #222; display: flex; justify-content: space-around; padding: 10px 0; }
+          .nav { position: fixed; bottom: 0; left: 0; width: 100%; background: #111; border-top: 1px solid #222; display: flex; justify-content: space-around; padding: 10px 0; z-index: 100; }
           .nav a { color: #777; text-decoration: none; font-size: 11px; text-align: center; text-transform: uppercase; }
           .nav a.active { color: #fff; font-weight: bold; }
         </style>
@@ -127,16 +132,17 @@ router.get('/features', isAuthenticated, (req, res) => {
         <title>DRAKE FEATURES</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <style>
-          body { background: #0b0b0b; color: #fff; font-family: sans-serif; margin: 0; padding-bottom: 70px; }
+          body { background: #0b0b0b; color: #fff; font-family: sans-serif; margin: 0; padding-bottom: 80px; }
           .header { padding: 15px 20px; background: #111; border-bottom: 1px solid #222; font-weight: bold; font-size: 14px; display: flex; justify-content: space-between; }
           .container { padding: 15px; }
           .section { background: #141414; border: 1px solid #222; border-radius: 6px; padding: 15px; margin-bottom: 15px; }
           .sec-title { font-size: 13px; font-weight: bold; margin-bottom: 5px; }
           .sec-desc { color: #777; font-size: 11px; margin-bottom: 12px; }
           .tag-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-top: 10px; }
-          .tag { background: #1a1a1a; border: 1px solid #333; padding: 8px 4px; text-align: center; font-size: 10px; border-radius: 4px; color: #aaa; }
+          .tag { background: #1a1a1a; border: 1px solid #333; padding: 8px 2px; text-align: center; font-size: 9px; border-radius: 4px; color: #aaa; }
           .tag.active { background: #fff; color: #000; font-weight: bold; border-color: #fff; }
-          .nav { position: fixed; bottom: 0; left: 0; width: 100%; background: #111; border-top: 1px solid #222; display: flex; justify-content: space-around; padding: 10px 0; }
+          .sub-option { display: flex; justify-content: space-between; align-items: center; background: #1a1a1a; padding: 10px; border-radius: 4px; margin-top: 8px; font-size: 11px; color: #aaa; }
+          .nav { position: fixed; bottom: 0; left: 0; width: 100%; background: #111; border-top: 1px solid #222; display: flex; justify-content: space-around; padding: 10px 0; z-index: 100; }
           .nav a { color: #777; text-decoration: none; font-size: 11px; text-align: center; text-transform: uppercase; }
           .nav a.active { color: #fff; font-weight: bold; }
         </style>
@@ -154,13 +160,35 @@ router.get('/features', isAuthenticated, (req, res) => {
               <div class="tag">DREAM</div>
               <div class="tag">ICE WALL</div>
               <div class="tag">MOCO</div>
+              <div class="tag">CLU</div>
+              <div class="tag">SHIROU</div>
+              <div class="tag">IRIS</div>
+              <div class="tag">DREKI</div>
             </div>
           </div>
 
           <div class="section">
-            <div class="sec-title">02 AIMPOINT</div>
+            <div class="sec-title">02 AIMPOINT <span style="font-size:9px; background:#222; padding:2px 5px; border-radius:3px; color:#aaa;">NEW</span></div>
             <div class="sec-desc">moves your aim from the chest toward the head.</div>
             <div style="text-align: right; font-size: 20px; font-weight: bold; color: #ff4d4d;">100%</div>
+          </div>
+
+          <div class="section">
+            <div class="sec-title">03 AIM LAG</div>
+            <div class="sec-desc">freezes the enemy for a moment while you fire or scope.</div>
+            <div class="sub-option"><span>when firing</span> <input type="checkbox" checked></div>
+            <div class="sub-option"><span>when scoping</span> <input type="checkbox" checked></div>
+          </div>
+
+          <div class="section">
+            <div class="sec-title">04 GLOO WALL ROTATION</div>
+            <div class="sec-desc">turns your gloo wall to the angle you set.</div>
+            <div style="text-align: right; font-size: 18px; font-weight: bold; color: #fff;">180°</div>
+          </div>
+
+          <div class="section">
+            <div class="sec-title">05 FAST REVIVE</div>
+            <div class="sec-desc">picks up a knocked teammate in about 0.1 s instead of 3 s.</div>
           </div>
         </div>
 
@@ -178,8 +206,8 @@ router.get('/features', isAuthenticated, (req, res) => {
 router.get('/manage', isAuthenticated, (req, res) => {
   const key = req.session.userKey;
   const keyData = db.prepare("SELECT * FROM keys WHERE key_code = ?").get(key);
-  const deviceName = keyData ? keyData.device : 'Unknown Device';
-  const platformName = keyData ? keyData.platform : 'Mobile/PC';
+  const deviceName = keyData ? keyData.device : 'Tecno Spark Go';
+  const platformName = keyData ? keyData.platform : 'Android';
 
   res.send(`
     <html>
@@ -191,7 +219,7 @@ router.get('/manage', isAuthenticated, (req, res) => {
           .header { padding: 15px 20px; background: #111; border-bottom: 1px solid #222; font-weight: bold; font-size: 14px; }
           .container { padding: 15px; }
           .card { background: #141414; border: 1px solid #222; padding: 15px; border-radius: 6px; margin-bottom: 12px; }
-          .nav { position: fixed; bottom: 0; left: 0; width: 100%; background: #111; border-top: 1px solid #222; display: flex; justify-content: space-around; padding: 10px 0; }
+          .nav { position: fixed; bottom: 0; left: 0; width: 100%; background: #111; border-top: 1px solid #222; display: flex; justify-content: space-around; padding: 10px 0; z-index: 100; }
           .nav a { color: #777; text-decoration: none; font-size: 11px; text-align: center; text-transform: uppercase; }
           .nav a.active { color: #fff; font-weight: bold; }
         </style>
@@ -247,7 +275,7 @@ router.post('/drake-secret-admin-panel-999/generate', (req, res) => {
     const insert = db.prepare('INSERT OR IGNORE INTO keys (key_code, status, device) VALUES (?, ?, ?)');
     for (let i = 1; i <= 50; i++) {
       const code = `DRKE-${Math.floor(1000 + Math.random() * 9000)}-${Math.floor(1000 + Math.random() * 9000)}-${Math.floor(1000 + Math.random() * 9000)}`;
-      insert.run(code, 'active', 'Unbound');
+      insert.run(code, 'active', 'Tecno Spark Go');
     }
   } catch(e) {}
   res.redirect('/drake-secret-admin-panel-999');
