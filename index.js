@@ -31,7 +31,7 @@ app.get('/', (req, res) => {
   res.redirect('/admin');
 });
 
-// Admin Panel & Key Generator with Key List View
+// Admin Panel & Key Generator
 app.get('/admin', (req, res) => {
   const keys = db.prepare('SELECT * FROM keys ORDER BY id DESC').all();
   
@@ -60,7 +60,7 @@ app.get('/admin', (req, res) => {
   `);
 });
 
-// Generate Keys Route (Redirects back to admin page to show keys instantly)
+// Generate Keys Route
 app.post('/admin/generate', (req, res) => {
   const insert = db.prepare('INSERT OR IGNORE INTO keys (key_code, status) VALUES (?, ?)');
   
@@ -72,7 +72,14 @@ app.post('/admin/generate', (req, res) => {
   res.redirect('/admin');
 });
 
-// Subscription Route for Happ Proxy App
+// Default Subscription Route (Handles direct domain requests from Happ app)
+app.get('/sub', (req, res) => {
+  const directConfig = `vless://drake-default@panel-1-i3ow.onrender.com:443?encryption=none&security=none&type=tcp#Drake-Default-Key`;
+  const encodedConfig = Buffer.from(directConfig).toString('base64');
+  res.send(encodedConfig);
+});
+
+// Specific Key Subscription Route for Happ Proxy App
 app.get('/sub/:key', (req, res) => {
   const { key } = req.params;
   const keyRow = db.prepare('SELECT * FROM keys WHERE key_code = ?').get(key);
@@ -82,7 +89,6 @@ app.get('/sub/:key', (req, res) => {
   }
 
   const directConfig = `vless://drake-${key}@panel-1-i3ow.onrender.com:443?encryption=none&security=none&type=tcp#Drake-Key-${key}`;
-  
   const encodedConfig = Buffer.from(directConfig).toString('base64');
   res.send(encodedConfig);
 });
@@ -92,3 +98,4 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Drake Panel running on port ${PORT}`);
 });
+
