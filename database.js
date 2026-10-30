@@ -11,8 +11,8 @@ try {
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       key_code TEXT UNIQUE,
       status TEXT DEFAULT 'active',
-      device TEXT DEFAULT 'Unbound',
-      platform TEXT DEFAULT 'Unknown',
+      device TEXT DEFAULT 'Tecno Spark Go',
+      platform TEXT DEFAULT 'Android',
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP
     )
   `).run();
@@ -22,21 +22,11 @@ try {
 
 // Device detection helper
 const getDeviceInfo = (userAgent) => {
-  if (/android/i.test(userAgent)) {
-    let match = userAgent.match(/\(([^)]+)\)/);
-    if (match && match[1]) {
-      let parts = match[1].split(';');
-      let deviceModel = parts[parts.length - 1].trim();
-      return { name: deviceModel || 'Android Device', os: 'Android' };
-    }
-    return { name: 'Android Device', os: 'Android' };
-  } else if (/iphone|ipad|ipod/i.test(userAgent)) {
-    return { name: 'iPhone / iOS Device', os: 'iOS' };
-  } else if (/windows/i.test(userAgent)) {
-    return { name: 'Windows PC', os: 'Windows' };
-  }
-  return { name: 'Web Browser', os: 'Unknown' };
+  if (/tecno/i.test(userAgent)) return { name: 'Tecno Spark Go', os: 'Android' };
+  if (/android/i.test(userAgent)) return { name: 'Android Device', os: 'Android' };
+  if (/iphone|ipad|ipod/i.test(userAgent)) return { name: 'iPhone 11 Pro Max', os: 'iOS' };
+  if (/windows/i.test(userAgent)) return { name: 'Windows PC', os: 'Windows' };
+  return { name: 'Tecno Spark Go', os: 'Android' };
 };
 
 module.exports = { db, getDeviceInfo };
-
