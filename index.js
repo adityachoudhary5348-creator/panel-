@@ -7,6 +7,14 @@ const PORT = process.env.PORT || 3000;
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Dynamic key storage containing 500+ valid keys (supports Hours & Days)
+const validKeys = new Set();
+for(let i = 1; i <= 500; i++) {
+    let padded = String(i).padStart(4, '0');
+    validKeys.add(`DRAKE-${padded}-24H`);
+}
+validKeys.add('DRAKE-82A6-D0C5-D56E');
+
 function getDeviceInfo(userAgent) {
     let device = "TECNO KN3";
     let os = "Android";
@@ -120,7 +128,7 @@ app.get('/', (req, res) => {
             padding: 4px 8px 4px 12px;
             margin-top: 8px;
         }
-        input[type="text"] {
+        input[type="text"], select {
             flex: 1;
             background: transparent;
             border: none;
@@ -130,6 +138,7 @@ app.get('/', (req, res) => {
             outline: none;
             letter-spacing: 1px;
         }
+        select option { background: #141414; color: #fff; }
         .btn-paste {
             background: #1c1c1c;
             color: #fff;
@@ -153,30 +162,6 @@ app.get('/', (req, res) => {
             letter-spacing: 3px;
             margin-top: 15px;
             cursor: pointer;
-        }
-        .add-sub-box {
-            background: #141414;
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            padding: 16px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            text-decoration: none;
-            color: #fff;
-            margin-top: 15px;
-        }
-        .add-sub-btn {
-            background: #222;
-            border: 1px solid #444;
-            width: 36px;
-            height: 36px;
-            border-radius: 4px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.2rem;
-            font-weight: bold;
         }
         .footer-info {
             text-align: center;
@@ -300,21 +285,13 @@ app.get('/', (req, res) => {
         <div class="card">
             <div style="font-size: 0.65rem; color: var(--text-muted); letter-spacing: 1px;">■ ACCESS KEY</div>
             <div class="input-box-wrapper">
-                <input type="text" id="keyInput" placeholder="DRAKE-XXXX-XXXX-XXXX" value="DRAKE-82A6-D0C5-D56E">
+                <input type="text" id="keyInput" placeholder="DRAKE-XXXX-XXXX-XXXX" value="DRAKE-0001-24H">
                 <button class="btn-paste" onclick="navigator.clipboard.readText().then(t => document.getElementById('keyInput').value = t)">PASTE</button>
             </div>
-            <div id="errorMsg">Invalid Key! Please use a valid key format.</div>
+            <div id="errorMsg">Invalid Key! Please enter a valid key.</div>
         </div>
 
         <button class="btn-unlock" onclick="verifyKey()">UNLOCK</button>
-
-        <a href="#" onclick="openVpnApp(event)" class="add-sub-box">
-            <div>
-                <div style="font-weight: 900; font-size: 0.8rem; letter-spacing: 1px;">ADD SUBSCRIPTION</div>
-                <div style="font-size: 0.65rem; color: var(--text-muted); margin-top: 2px;">opens your vpn app with your key ready</div>
-            </div>
-            <div class="add-sub-btn">+</div>
-        </a>
 
         <div class="footer-info">
             no key? contact your seller.<br>
@@ -329,39 +306,31 @@ app.get('/', (req, res) => {
 
         <div style="text-align: center; padding: 10px 0 25px 0;">
             <div class="skull-img" style="width: 90px; height: 90px; font-size: 45px; margin-bottom: 10px;">💀</div>
-            <div id="timeDisplay" style="font-size: 2rem; font-weight: 900; letter-spacing: 2px;">1D 23H</div>
+            <div id="timeDisplay" style="font-size: 2rem; font-weight: 900; letter-spacing: 2px;">24H 00M</div>
             <div style="font-size: 0.6rem; color: var(--text-muted); letter-spacing: 2px; margin-top: 2px;">TIME LEFT</div>
         </div>
 
         <div class="card">
             <div style="font-size: 0.65rem; color: var(--text-muted); margin-bottom: 6px; letter-spacing: 0.5px;">KEY &nbsp; <span id="displayKeyText" style="color: #fff; font-family: monospace; font-weight: bold;">-</span></div>
             <div style="position: absolute; right: 14px; top: 12px;">
-                <button class="btn-paste" onclick="navigator.clipboard.writeText(document.getElementById('displayKeyText').innerText)">📋 COPY</button>
+                <button class="btn-paste" onclick="copySubscriptionLink()">📋 COPY SUB</button>
             </div>
         </div>
 
         <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 12px;">
             <div class="card" style="margin: 0; padding: 12px 8px; text-align: center;">
                 <div style="font-size: 0.55rem; color: var(--text-muted); letter-spacing: 0.5px;">ACTIVATED</div>
-                <div style="font-size: 0.7rem; font-weight: bold; margin-top: 4px;">26 Oct 2026</div>
+                <div style="font-size: 0.7rem; font-weight: bold; margin-top: 4px;">29 Oct 2026</div>
             </div>
             <div class="card" style="margin: 0; padding: 12px 8px; text-align: center;">
                 <div style="font-size: 0.55rem; color: var(--text-muted); letter-spacing: 0.5px;">EXPIRES</div>
-                <div style="font-size: 0.7rem; font-weight: bold; margin-top: 4px;">29 Oct 2026</div>
+                <div style="font-size: 0.7rem; font-weight: bold; margin-top: 4px;">30 Oct 2026</div>
             </div>
             <div class="card" style="margin: 0; padding: 12px 8px; text-align: center;">
                 <div style="font-size: 0.55rem; color: var(--text-muted); letter-spacing: 0.5px;">DEVICE</div>
                 <div style="font-size: 0.7rem; font-weight: bold; margin-top: 4px;">${info.device}</div>
             </div>
         </div>
-
-        <a href="#" onclick="openVpnApp(event)" class="add-sub-box">
-            <div>
-                <div style="font-weight: 900; font-size: 0.8rem; letter-spacing: 1px;">ADD SUBSCRIPTION</div>
-                <div style="font-size: 0.65rem; color: var(--text-muted); margin-top: 2px;">opens your vpn app with your key ready</div>
-            </div>
-            <div class="add-sub-btn">+</div>
-        </a>
     </div>
 
     <div id="features" class="content-section">
@@ -479,7 +448,6 @@ app.get('/', (req, res) => {
             </div>
         </div>
     </div>
-
     <div id="manage" class="content-section">
         <div class="card">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
@@ -492,36 +460,40 @@ app.get('/', (req, res) => {
             <button style="width:100%; background:#1c1c1c; color:#fff; border:1px solid #333; padding:12px; border-radius:4px; font-weight:bold; font-size:0.75rem; letter-spacing:1px; margin-top:15px; cursor:pointer;">RESET DEVICE</button>
         </div>
 
-        <div class="card">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-                <span style="font-size: 0.6rem; color: var(--text-muted); letter-spacing: 1px;">UPDATE NOTES</span>
-                <span style="font-size: 0.6rem; color: var(--text-muted); cursor: pointer;">ALL UPDATES ↗</span>
+        <!-- ADMIN KEY GENERATOR CARD -->
+        <div class="card" style="border: 1px solid #444;">
+            <div style="font-size: 0.7rem; font-weight: 900; letter-spacing: 1px; margin-bottom: 8px; color: #34d399;">🛠️ ADMIN KEY GENERATOR</div>
+            <div style="font-size: 0.6rem; color: var(--text-muted); margin-bottom: 10px;">Create new hours or days valid keys instantly.</div>
+            
+            <div style="display: flex; gap: 8px; margin-bottom: 10px;">
+                <select id="keyDuration" style="background: #0a0a0a; border: 1px solid #333; padding: 10px; border-radius: 4px; font-size: 0.75rem;">
+                    <option value="1H">1 Hour</option>
+                    <option value="3H">3 Hours</option>
+                    <option value="12H">12 Hours</option>
+                    <option value="24H" selected>24 Hours (1 Day)</option>
+                    <option value="7D">7 Days</option>
+                    <option value="30D">30 Days</option>
+                </select>
+                <button onclick="generateNewKey()" style="background: #fff; color: #000; border: none; padding: 10px 16px; border-radius: 4px; font-weight: bold; font-size: 0.75rem; cursor: pointer; letter-spacing: 1px;">GENERATE</button>
             </div>
-            <div style="font-weight: 900; font-size: 0.8rem; margin-bottom: 6px; letter-spacing: 0.5px;">V1.7 AIM LAG IS BACK, NEXT TO AIMPOINT</div>
-            <div style="font-size: 0.68rem; color: var(--text-muted); line-height: 1.5;">aim lag is back, sitting under aimpoint. run it with aimpoint or on its own. every feature now carries a shor...</div>
+
+            <div class="input-box-wrapper" style="margin-top: 5px;">
+                <input type="text" id="generatedKeyOutput" placeholder="Generated key will appear here..." readonly>
+                <button class="btn-paste" onclick="copyGeneratedKey()">COPY</button>
+            </div>
         </div>
 
-        <div class="card" style="display: flex; justify-content: space-between; align-items: center; cursor: pointer;" onclick="window.open('https://t.me', '_blank')">
+        <div class="card" style="display: flex; justify-content: space-between; align-items: center; cursor: pointer;" onclick="alert('Setup Guide: Copy subscription link from Home, open Happ app, click + and select Clipboard or QR to import.')">
             <div style="display: flex; align-items: center; gap: 12px;">
-                <div style="background: #222; width: 32px; height: 32px; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 0.8rem;">D</div>
+                <div style="background: #222; width: 32px; height: 32px; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 0.8rem;">📖</div>
                 <div>
-                    <div style="font-weight: 900; font-size: 0.8rem; letter-spacing: 1px;">DISCORD</div>
+                    <div style="font-weight: 900; font-size: 0.8rem; letter-spacing: 1px;">SETUP GUIDE</div>
                 </div>
             </div>
             <span style="color: var(--text-muted);">↗</span>
         </div>
 
-        <div class="card" style="display: flex; justify-content: space-between; align-items: center; cursor: pointer;" onclick="window.open('https://whatsapp.com', '_blank')">
-            <div style="display: flex; align-items: center; gap: 12px;">
-                <div style="background: #222; width: 32px; height: 32px; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 0.8rem;">W</div>
-                <div>
-                    <div style="font-weight: 900; font-size: 0.8rem; letter-spacing: 1px;">WHATSAPP</div>
-                </div>
-            </div>
-            <span style="color: var(--text-muted);">↗</span>
-        </div>
-
-        <button onclick="logoutSession()" style="width:100%; background:rgba(255, 77, 77, 0.1); color:#ff4d4d; border:1px solid rgba(255, 77, 77, 0.3); padding:14px; border-radius:4px; font-weight:900; font-size:0.8rem; letter-spacing:2px; margin-top:10px; cursor:pointer;">🚪 LOG OUT</button>
+        <button onclick="logoutSession()" style="width:100%; background:rgba(255, 77, 77, 0.1); color:#ff4d4d; border:1px solid rgba(255, 77, 77, 0.3); padding:14px; border-radius:4px; font-weight:900; font-size:0.8rem; letter-spacing:2px; margin-top:15px; cursor:pointer;">🚪 LOG OUT</button>
     </div>
 
     <nav id="bottomNav">
@@ -537,6 +509,9 @@ app.get('/', (req, res) => {
     </nav>
 
     <script>
+        // In-memory key store synced with backend list
+        const backendKeys = ${JSON.stringify(Array.from(validKeys))};
+
         function switchTab(tabId) {
             document.querySelectorAll('.content-section').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
@@ -552,15 +527,49 @@ app.get('/', (req, res) => {
             const key = document.getElementById('keyInput').value.trim();
             const err = document.getElementById('errorMsg');
             
-            if(key.startsWith('DRAKE-')) {
+            if(backendKeys.includes(key) || key.startsWith('DRAKE-')) {
                 err.style.display = 'none';
                 document.getElementById('login-screen').classList.remove('active');
                 document.getElementById('bottomNav').style.display = 'flex';
                 document.getElementById('displayKeyText').innerText = key;
+                
+                // Adjust timer display according to key duration format
+                if(key.includes('H')) {
+                    let hrs = key.split('-')[2];
+                    document.getElementById('timeDisplay').innerText = hrs + ' 00M';
+                } else if(key.includes('D')) {
+                    let days = key.split('-')[2];
+                    document.getElementById('timeDisplay').innerText = days + ' 00H';
+                } else {
+                    document.getElementById('timeDisplay').innerText = '24H 00M';
+                }
+                
                 switchTab('home');
             } else {
                 err.style.display = 'block';
-                err.innerText = 'Invalid Key! Please use a valid key format.';
+                err.innerText = 'Invalid Key! Please generate or enter a valid key.';
+            }
+        }
+
+        function generateNewKey() {
+            const duration = document.getElementById('keyDuration').value;
+            const randomPart = Math.random().toString(36).substring(2, 6).toUpperCase();
+            const newKey = \`DRAKE-\${randomPart}-\${duration}\`;
+            
+            // Add generated key to valid keys array so it can login successfully
+            backendKeys.push(newKey);
+            
+            document.getElementById('generatedKeyOutput').value = newKey;
+            alert("New valid key generated successfully: " + newKey);
+        }
+
+        function copyGeneratedKey() {
+            const kBox = document.getElementById('generatedKeyOutput');
+            if(kBox.value) {
+                navigator.clipboard.writeText(kBox.value);
+                alert("Generated key copied to clipboard!");
+            } else {
+                alert("Please generate a key first!");
             }
         }
 
@@ -571,12 +580,12 @@ app.get('/', (req, res) => {
             document.getElementById('keyInput').value = '';
         }
 
-        function openVpnApp(e) {
-            e.preventDefault();
-            window.location.href = "happ://";
-            setTimeout(() => {
-                alert("Add Subscription: VPN app launched successfully with your active key!");
-            }, 500);
+        function copySubscriptionLink() {
+            const key = document.getElementById('displayKeyText').innerText;
+            const subLink = "vmess://drake-panel-" + btoa(key);
+            navigator.clipboard.writeText(subLink).then(() => {
+                alert("Subscription link copied successfully! Now open Happ app, click +, and select Clipboard.");
+            });
         }
     </script>
 </body>
