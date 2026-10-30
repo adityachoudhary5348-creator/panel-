@@ -26,6 +26,11 @@ db.prepare(`
   )
 `).run();
 
+// Root URL redirect to Admin page (fixes Cannot GET / error)
+app.get('/', (req, res) => {
+  res.redirect('/admin');
+});
+
 // Admin Login Page
 app.get('/admin', (req, res) => {
   res.send(`
@@ -53,7 +58,7 @@ app.post('/admin/generate', (req, res) => {
   res.send('<h3>50 Phantom Keys Generated Successfully!</h3><a href="/admin">Go Back</a>');
 });
 
-// Subscription Route for Happ Proxy App (Updated with your actual Render domain)
+// Subscription Route for Happ Proxy App
 app.get('/sub/:key', (req, res) => {
   const { key } = req.params;
   const keyRow = db.prepare('SELECT * FROM keys WHERE key_code = ?').get(key);
