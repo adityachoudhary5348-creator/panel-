@@ -8,7 +8,6 @@ const app = express();
 const dbPath = path.join(__dirname, 'drake_panel.db');
 const db = new Database(dbPath);
 
-// Security & Middlewares
 app.use(helmet());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
@@ -18,7 +17,7 @@ app.use(session({
   saveUninitialized: true
 }));
 
-// Database Table Creation
+// Table Creation for Keys
 try {
   db.prepare(`
     CREATE TABLE IF NOT EXISTS keys (
@@ -32,20 +31,18 @@ try {
   console.error("DB Table Creation Error:", err);
 }
 
-// Root URL opens Admin Panel for browser
+// Root URL redirect to Admin page
 app.get('/', (req, res) => {
   res.redirect('/admin');
 });
 
-// Admin Panel & Key Generator
+// Admin Panel UI & Key List
 app.get('/admin', (req, res) => {
   let keys = [];
-  let errorMessage = '';
-  
   try {
     keys = db.prepare('SELECT * FROM keys ORDER BY id DESC').all();
   } catch (err) {
-    errorMessage = err.message;
+    console.error(err);
   }
   
   let keysHtml = keys.map(k => `<li style="padding: 5px; border-bottom: 1px solid #333;"><code>${k.key_code}</code> &nbsp; [<span style="color: #4CAF50;">${k.status}</span>]</li>`).join('');
@@ -58,7 +55,6 @@ app.get('/admin', (req, res) => {
       </head>
       <body style="font-family: Arial; background: #121212; color: #fff; text-align: center; padding: 20px;">
         <h2>Drake Panel Key Generator</h2>
-        ${errorMessage ? `<p style="color: red;">Error: ${errorMessage}</p>` : ''}
         <form action="/admin/generate" method="POST">
           <button type="submit" style="padding: 12px 25px; background: #6200ee; color: #fff; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; font-weight: bold;">Generate 50 Phantom Keys</button>
         </form>
@@ -74,7 +70,7 @@ app.get('/admin', (req, res) => {
   `);
 });
 
-// Generate Keys Route
+// Generate 50 Keys Logic
 app.post('/admin/generate', (req, res) => {
   try {
     const insert = db.prepare('INSERT OR IGNORE INTO keys (key_code, status) VALUES (?, ?)');
@@ -85,11 +81,10 @@ app.post('/admin/generate', (req, res) => {
   } catch (err) {
     console.error("Key Generation Error:", err);
   }
-  
   res.redirect('/admin');
 });
 
-// Auto-Sub Route (Automatically grabs the latest active key from database)
+// Auto-Sub Route (Grabs latest active key and returns Base64 config for V2Box)
 app.get('/sub', (req, res) => {
   try {
     const keyRow = db.prepare("SELECT * FROM keys WHERE status = 'active' ORDER BY id DESC LIMIT 1").get();
@@ -102,26 +97,6 @@ app.get('/sub', (req, res) => {
     const fallbackConfig = `vless://drake-fallback@panel-1-i3ow.onrender.com:443?encryption=none&security=tls&type=tcp#Drake-Fallback`;
     return res.send(Buffer.from(fallbackConfig).toString('base64'));
   }
-});
-
-// Specific Key Subscription Route
-app.get('/sub/:key', (req, res) => {
-  const { key } = req.params;
-  let keyRow = null;
-  
-  try {
-    keyRow = db.prepare('SELECT * FROM keys WHERE key_code = ?').get(key);
-  } catch (err) {
-    console.error("DB Query Error:", err);
-  }
-  
-  if (!keyRow || keyRow.status !== 'active') {
-    return res.status(403).send('Invalid or expired key');
-  }
-
-  const directConfig = `vless://drake-${key}@panel-1-i3ow.onrender.com:443?encryption=none&security=tls&type=tcp#Drake-Key-${key}`;
-  const encodedConfig = Buffer.from(directConfig).toString('base64');
-  res.send(encodedConfig);
 });
 
 // Server Listen
