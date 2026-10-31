@@ -39,7 +39,6 @@ app.use(session({
   saveUninitialized: false,
   cookie: { secure: false }
 }));
-
 const htmlPage = `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -282,7 +281,6 @@ const htmlPage = `<!DOCTYPE html>
             <button class="nav-item" onclick="switchTab('manage', this)"><div>⚙️</div>MANAGE</button>
         </div>
     </div>
-
     <script>
         let currentKey = "";
         let expiryTimeMs = 0;
@@ -476,7 +474,6 @@ const adminPage = `<!DOCTYPE html>
     </div>
 </body>
 </html>`;
-
 app.get('/', (req, res) => { res.send(htmlPage); });
 
 // Subscription route for Happ app import
@@ -581,3 +578,4 @@ app.post('/admin/generate', (req, res) => {
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => { console.log('Drake server running on port ' + PORT); });
+   
