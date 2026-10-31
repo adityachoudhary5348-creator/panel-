@@ -39,6 +39,7 @@ app.use(session({
   saveUninitialized: false,
   cookie: { secure: false }
 }));
+
 const htmlPage = `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -429,6 +430,7 @@ const htmlPage = `<!DOCTYPE html>
     </script>
 </body>
 </html>`;
+
 const adminPage = `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -476,17 +478,22 @@ const adminPage = `<!DOCTYPE html>
 </html>`;
 app.get('/', (req, res) => { res.send(htmlPage); });
 
-// Subscription route for Happ app import
+// Subscription route for Happ app import with VLESS real config
 app.get('/sub/:key', (req, res) => {
   const { key } = req.params;
   const keyRow = db.prepare('SELECT * FROM keys WHERE key_code = ?').get(key);
-  
+
   if (!keyRow || keyRow.status !== 'active') {
     return res.status(403).send('Invalid or expired key');
   }
 
-  const proxyConfig = `vless://drake-${key}@127.0.0.1:443?encryption=none&security=none&type=tcp#Drake-Key-${key}`;
+  const uuid = key; 
+  const serverIp = req.hostname || '127.0.0.1';
+  const domain = req.hostname || 'yourdomain.com';
+
+  const proxyConfig = `vless://${uuid}@${serverIp}:443?encryption=none&security=tls&sni=${domain}&type=ws&host=${domain}&path=%2Fvless#Drake-Key-${key}`;
   const encodedConfig = Buffer.from(proxyConfig).toString('base64');
+  
   res.send(encodedConfig);
 });
 
@@ -541,7 +548,6 @@ app.post('/api/reset-device', (req, res) => {
   db.prepare('UPDATE keys SET status = "unused", activated_date = NULL, expiry_date = NULL, device_info = NULL WHERE key_code = ?').run(key);
   res.json({ success: true });
 });
-
 app.get('/admin', (req, res) => {
   if (!req.session.isAdmin) {
     return res.send(`<!DOCTYPE html><html><head><title>Admin Login</title><style>body{background:#0c0c0c;color:#fff;font-family:monospace;display:flex;justify-content:center;align-items:center;height:100vh;} .box{background:#141414;padding:20px;border:1px solid #262626;width:300px;} input{width:100%;padding:10px;margin-bottom:10px;background:#0c0c0c;border:1px solid #333;color:#fff;} button{width:100%;padding:10px;background:#fff;border:none;font-weight:bold;cursor:pointer;}</style></head><body><div class="box"><h2>DRAKE ADMIN LOGIN</h2><form method="POST" action="/admin/login"><input type="text" name="username" placeholder="Username" required><input type="password" name="password" placeholder="Password" required><button type="submit">LOGIN</button></form></div></body></html>`);
@@ -578,4 +584,3 @@ app.post('/admin/generate', (req, res) => {
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => { console.log('Drake server running on port ' + PORT); });
-   
