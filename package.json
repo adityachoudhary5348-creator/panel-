@@ -6,9 +6,9 @@
     "start": "node index.js"
   },
   "dependencies": {
-    "better-sqlite3": "^9.4.3",
     "express": "^4.19.2",
     "express-session": "^1.18.0",
-    "helmet": "^7.1.0"
+    "helmet": "^7.1.0",
+    "sqlite3": "^5.1.7"
   }
 }
