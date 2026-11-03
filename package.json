@@ -1,15 +1,15 @@
 {
-  "name": "drake-panel",
+  "name": "my-render-app",
   "version": "1.0.0",
-  "description": "Drake Panel Secure Authentication System",
-  "main": "index.js",
+  "description": "App deployed on Render",
+  "main": "src/index.js",
   "scripts": {
-    "start": "node index.js"
+    "start": "node src/index.js"
   },
   "dependencies": {
-    "better-sqlite3": "^11.0.0",
-    "express": "^4.19.2",
-    "express-session": "^1.18.0",
-    "helmet": "^7.1.0"
+    "express": "^4.19.2"
+  },
+  "engines": {
+    "node": ">=18.0.0"
   }
 }
