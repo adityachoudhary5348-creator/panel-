@@ -6,6 +6,7 @@ const Database = require('better-sqlite3');
 const app = express();
 const db = new Database('drake.db');
 
+// Database Tables Creation
 db.exec(`
   CREATE TABLE IF NOT EXISTS keys (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -25,6 +26,7 @@ db.exec(`
   );
 `);
 
+// Default Admin Account Creation
 const adminCheck = db.prepare('SELECT * FROM admins WHERE username = ?').get('admin');
 if (!adminCheck) {
   db.prepare('INSERT INTO admins (username, password) VALUES (?, ?)').run('admin', 'admin123');
@@ -38,14 +40,12 @@ app.use(session({
   resave: false,
   saveUninitialized: false,
   cookie: { secure: false }
-}));
-
-const htmlPage = `<!DOCTYPE html>
+}));const htmlPage = `<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Drake Panel</title>
+    <title>Drake Panel - Free Fire</title>
     <style>
         :root {
             --bg-color: #0c0c0c;
@@ -66,17 +66,15 @@ const htmlPage = `<!DOCTYPE html>
         .screen { display: none; }
         .screen.active { display: block; }
         .login-container { text-align: center; margin-top: 20px; }
-        .skull-logo { width: 110px; margin-bottom: 15px; filter: drop-shadow(0 0 10px rgba(255,255,255,0.3)); }
         .login-container h2 { font-size: 24px; letter-spacing: 3px; margin-bottom: 5px; }
         .login-container p { font-size: 9px; color: var(--text-muted); margin-bottom: 25px; letter-spacing: 1px; }
         .input-group { text-align: left; background: var(--card-bg); border: 1px solid var(--border-color); padding: 12px; margin-bottom: 15px; }
         .input-group label { display: block; font-size: 9px; color: var(--text-muted); margin-bottom: 5px; letter-spacing: 1px; }
         .input-row { display: flex; justify-content: space-between; align-items: center; }
         .input-row input { background: transparent; border: none; color: var(--text-main); font-size: 13px; outline: none; width: 70%; letter-spacing: 1px; }
-        .action-btn { width: 100%; background: var(--text-main); color: var(--bg-color); border: none; padding: 14px; font-weight: bold; font-size: 13px; letter-spacing: 2px; cursor: pointer; margin-top: 10px; clip-path: polygon(0 0, 96% 0, 100% 25%, 100% 100%, 4% 100%, 0 75%); }
+        .action-btn { width: 100%; background: var(--text-main); color: var(--bg-color); border: none; padding: 14px; font-weight: bold; font-size: 13px; letter-spacing: 2px; cursor: pointer; margin-top: 10px; }
         .status-row { display: flex; justify-content: space-between; font-size: 9px; color: var(--text-muted); margin-bottom: 10px; letter-spacing: 1px; }
         .timer-section { text-align: center; position: relative; margin: 10px 0 20px 0; }
-        .timer-skull { width: 90px; margin-bottom: 10px; filter: drop-shadow(0 0 8px rgba(255,255,255,0.4)); }
         .time-left-val { font-size: 26px; font-weight: bold; letter-spacing: 2px; margin-bottom: 2px; }
         .time-left-label { font-size: 9px; color: var(--text-muted); letter-spacing: 2px; }
         .key-box { background: var(--card-bg); border: 1px solid var(--border-color); padding: 12px 15px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
@@ -86,10 +84,6 @@ const htmlPage = `<!DOCTYPE html>
         .info-card { background: var(--card-bg); border: 1px solid var(--border-color); padding: 10px 6px; text-align: center; }
         .info-card span { display: block; font-size: 8px; color: var(--text-muted); margin-bottom: 4px; letter-spacing: 0.5px; }
         .info-card strong { font-size: 9px; word-break: break-word; }
-        .sub-box { background: var(--card-bg); border: 1px solid var(--border-color); padding: 12px 15px; display: flex; justify-content: space-between; align-items: center; clip-path: polygon(0 0, 96% 0, 100% 30%, 100% 100%, 0 100%); margin-bottom: 15px; }
-        .sub-box h3 { font-size: 11px; letter-spacing: 1px; margin-bottom: 2px; }
-        .sub-box p { font-size: 8px; color: var(--text-muted); }
-        .add-btn { background: #dcdcdc; border: none; color: #000; width: 32px; height: 32px; font-size: 18px; font-weight: bold; display: flex; align-items: center; justify-content: center; cursor: pointer; }
         .features-top-note { display: flex; justify-content: space-between; font-size: 9px; color: var(--text-muted); margin-bottom: 12px; letter-spacing: 0.5px; }
         .feature-card { background: var(--card-bg); border: 1px solid var(--border-color); padding: 12px; margin-bottom: 12px; position: relative; }
         .feature-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
@@ -101,18 +95,6 @@ const htmlPage = `<!DOCTYPE html>
         .slider-switch:before { position: absolute; content: ""; height: 14px; width: 14px; left: 2px; bottom: 2px; background-color: white; transition: .3s; }
         input:checked + .slider-switch { background-color: #fff; }
         input:checked + .slider-switch:before { transform: translateX(16px); background-color: #000; }
-        .style-label { font-size: 8px; color: var(--text-muted); letter-spacing: 1px; margin-bottom: 6px; display: block; }
-        .style-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; margin-bottom: 5px; }
-        .style-btn { background: #0c0c0c; border: 1px solid var(--border-color); color: var(--text-muted); font-size: 8px; padding: 8px 4px; text-align: center; cursor: pointer; letter-spacing: 0.5px; }
-        .style-btn.active { background: #fff; color: #000; font-weight: bold; border-color: #fff; }
-        .aim-slider-container { display: flex; gap: 15px; align-items: center; margin-top: 10px; }
-        .body-preview { width: 70px; height: 90px; background: #0c0c0c; border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: center; position: relative; }
-        .slider-box { flex: 1; }
-        .custom-range { width: 100%; accent-color: #fff; background: #333; height: 4px; outline: none; margin: 10px 0; }
-        .range-labels { display: flex; justify-content: space-between; font-size: 7px; color: var(--text-muted); }
-        .angle-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; margin-top: 8px; }
-        .angle-btn { background: #0c0c0c; border: 1px solid var(--border-color); color: var(--text-main); font-size: 9px; padding: 6px; text-align: center; cursor: pointer; }
-        .angle-btn.active { background: #fff; color: #000; font-weight: bold; }
         .nav-bar { position: absolute; bottom: 0; left: 0; width: 100%; background: #0f0f0f; border-top: 1px solid var(--border-color); display: flex; justify-content: space-around; padding: 10px 0; z-index: 10; }
         .nav-item { background: none; border: none; color: var(--text-muted); font-size: 9px; text-align: center; cursor: pointer; letter-spacing: 1px; }
         .nav-item.active { color: var(--text-main); }
@@ -124,17 +106,14 @@ const htmlPage = `<!DOCTYPE html>
     <div class="phone-frame">
         <div class="top-bar">
             <h1 id="page-title">DRAKE</h1>
-            <div class="top-actions">
-                <button class="icon-btn">EN</button>
-            </div>
+            <div class="top-actions"><button class="icon-btn">EN</button></div>
         </div>
 
         <div class="content">
             <div id="login-screen" class="screen active">
                 <div class="login-container">
-                    <svg class="skull-logo" viewBox="0 0 24 24" fill="white"><path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,4A8,8 0 0,1 20,12A8,8 0 0,1 12,20A8,8 0 0,1 4,12A8,8 0 0,1 12,4Z"/></svg>
-                    <h2>DRAKE</h2>
-                    <p>NO ACCOUNT. NO PASSWORD. JUST YOUR KEY.</p>
+                    <h2>DRAKE PANEL</h2>
+                    <p>FREE FIRE LICENSE SYSTEM</p>
                     <form id="login-form" onsubmit="handleLogin(event)">
                         <div class="input-group">
                             <label>■ ACCESS KEY</label>
@@ -143,22 +122,18 @@ const htmlPage = `<!DOCTYPE html>
                                 <button type="button" class="icon-btn" onclick="pasteKey()">PASTE</button>
                             </div>
                         </div>
-                        <button type="submit" class="action-btn">UNLOCK</button>
+                        <button type="submit" class="action-btn">UNLOCK PANEL</button>
                         <div id="login-error" class="error-msg"></div>
                     </form>
-                    <div class="footer-note" style="margin-top:20px; font-size:9px; color:var(--text-muted); line-height:1.5;">
-                        no key? contact your seller.<br>your time starts when you connect.
-                    </div>
                 </div>
             </div>
 
             <div id="home-screen" class="screen">
                 <div class="status-row">
-                    <span id="conn-status" style="color:#4caf50;">■ ONLINE</span>
-                    <span>LAST REFRESHED JUST NOW</span>
+                    <span style="color:#4caf50;">■ ONLINE</span>
+                    <span>FF PANEL CONNECTED</span>
                 </div>
                 <div class="timer-section">
-                    <svg class="timer-skull" viewBox="0 0 24 24" fill="white"><path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,4A8,8 0 0,1 20,12A8,8 0 0,1 12,20A8,8 0 0,1 4,12A8,8 0 0,1 12,4Z"/></svg>
                     <div class="time-left-val" id="time-left-display">--</div>
                     <div class="time-left-label">TIME LEFT</div>
                 </div>
@@ -171,106 +146,48 @@ const htmlPage = `<!DOCTYPE html>
                     <div class="info-card"><span>EXPIRES</span><strong id="info-expires">-</strong></div>
                     <div class="info-card"><span>DEVICE</span><strong id="info-device">-</strong></div>
                 </div>
-                
-                <div class="sub-box" onclick="openVpnApp()" style="cursor: pointer;">
-                    <div>
-                        <h3>ADD SUBSCRIPTION</h3>
-                        <p>opens your vpn app with your key ready</p>
-                    </div>
-                    <button class="add-btn">+</button>
-                </div>
             </div>
 
             <div id="features-screen" class="screen">
                 <div class="features-top-note">
-                    <span>changes apply from your next match</span>
-                    <span style="color:#fff; font-weight:bold;">5/5</span>
+                    <span>Free Fire Mod Controls</span>
+                    <span style="color:#fff; font-weight:bold;">ACTIVE</span>
                 </div>
                 <div class="feature-card">
                     <div class="feature-header">
-                        <span class="feature-title">01 MARKER</span>
+                        <span class="feature-title">01 ENEMY ESP / MARKER</span>
                         <label class="switch"><input type="checkbox" checked><span class="slider-switch"></span></label>
                     </div>
-                    <div class="feature-desc">marks every enemy on your screen.</div>
-                    <span class="style-label">MARK STYLE</span>
-                    <div class="style-grid">
-                        <div class="style-btn active" onclick="selectStyle(this)">DRAKE</div>
-                        <div class="style-btn" onclick="selectStyle(this)">DREAM</div>
-                        <div class="style-btn" onclick="selectStyle(this)">ICE WALL</div>
-                        <div class="style-btn" onclick="selectStyle(this)">MOCO</div>
-                        <div class="style-btn" onclick="selectStyle(this)">CLU</div>
-                        <div class="style-btn" onclick="selectStyle(this)">SHIROU</div>
-                        <div class="style-btn" onclick="selectStyle(this)">IRIS</div>
-                        <div class="style-btn" onclick="selectStyle(this)">DREKI</div>
-                    </div>
+                    <div class="feature-desc">Marks every enemy on screen in real-time.</div>
                 </div>
                 <div class="feature-card">
                     <div class="feature-header">
-                        <span class="feature-title">02 AIMPOINT <span style="font-size:6px; background:#333; padding:1px 3px;">NEW</span></span>
+                        <span class="feature-title">02 AIMBOT (HEAD)</span>
                         <label class="switch"><input type="checkbox" checked><span class="slider-switch"></span></label>
                     </div>
-                    <div class="feature-desc">moves your aim from the chest toward the head. slide to choose how far.</div>
-                    <div style="font-size:11px; font-weight:bold; color:#ff5252; margin-bottom:5px;">AIM HEIGHT: <span id="aim-val">100%</span> (HEAD)</div>
-                    <div class="aim-slider-container">
-                        <div class="body-preview">
-                            <svg width="35" height="55" viewBox="0 0 24 24" fill="#ff5252"><path d="M12,2A3,3 0 0,1 15,5A3,3 0 0,1 12,8A3,3 0 0,1 9,5A3,3 0 0,1 12,2M19,15C19,12.5 14.5,11 12,11C9.5,11 5,12.5 5,15V22H19V15Z"/></svg>
-                        </div>
-                        <div class="slider-box">
-                            <input type="range" min="0" max="100" value="100" class="custom-range" id="aimRange" oninput="updateAim(this.value)">
-                            <div class="range-labels">
-                                <span>CHEST (0%)</span>
-                                <span>HEAD (100%)</span>
-                            </div>
-                        </div>
-                    </div>
+                    <div class="feature-desc">Locks crosshair toward enemy head automatically.</div>
                 </div>
                 <div class="feature-card">
                     <div class="feature-header">
-                        <span class="feature-title">03 AIM LAG</span>
-                        <label class="switch"><input type="checkbox"><span class="slider-switch"></span></label>
-                    </div>
-                    <div class="feature-desc">freezes the enemy for a moment while you fire or scope, so they're easier to hit.</div>
-                    <div style="display:flex; justify-content:space-between; align-items:center; background:#0c0c0c; padding:8px; margin-bottom:6px; border:1px solid #222;">
-                        <span style="font-size:9px;">when firing</span>
-                        <label class="switch" style="transform:scale(0.8)"><input type="checkbox"><span class="slider-switch"></span></label>
-                    </div>
-                    <div style="display:flex; justify-content:space-between; align-items:center; background:#0c0c0c; padding:8px; border:1px solid #222;">
-                        <span style="font-size:9px;">when scoping</span>
-                        <label class="switch" style="transform:scale(0.8)"><input type="checkbox" checked><span class="slider-switch"></span></label>
-                    </div>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-header">
-                        <span class="feature-title">04 GLOO WALL ROTATION</span>
+                        <span class="feature-title">03 GLOO WALL ROTATION</span>
                         <label class="switch"><input type="checkbox" checked><span class="slider-switch"></span></label>
                     </div>
-                    <div class="feature-desc">turns your gloo wall to the angle you set.</div>
-                    <div style="display:flex; justify-content:space-between; font-size:12px; font-weight:bold; margin-bottom:5px;">
-                        <span style="font-size:9px; color:var(--text-muted);">WALL ANGLE</span>
-                        <span id="angle-val" style="color:#fff;">180°</span>
-                    </div>
-                    <input type="range" min="-90" max="180" value="180" class="custom-range" oninput="updateAngle(this.value)">
-                    <div class="angle-grid">
-                        <div class="angle-btn" onclick="setAngle(this, -90)">-90°</div>
-                        <div class="angle-btn" onclick="setAngle(this, 0)">0°</div>
-                        <div class="angle-btn" onclick="setAngle(this, 90)">+90°</div>
-                        <div class="angle-btn active" onclick="setAngle(this, 180)">180°</div>
-                    </div>
+                    <div class="feature-desc">Instantly rotates gloo wall to 180 degrees.</div>
                 </div>
                 <div class="feature-card">
                     <div class="feature-header">
-                        <span class="feature-title">05 FAST REVIVE</span>
+                        <span class="feature-title">04 FAST REVIVE</span>
                         <label class="switch"><input type="checkbox" checked><span class="slider-switch"></span></label>
                     </div>
-                    <div class="feature-desc">picks up a knocked teammate in about 0.1 s instead of 3 s.</div>
+                    <div class="feature-desc">Revives teammates in 0.1s instead of 3s.</div>
                 </div>
             </div>
 
             <div id="manage-screen" class="screen">
                 <div class="feature-card" style="margin-bottom:15px;">
-                    <div style="font-size:8px; color:var(--text-muted); letter-spacing:1px;">THIS DEVICE</div>
+                    <div style="font-size:8px; color:var(--text-muted); letter-spacing:1px;">CONNECTED DEVICE</div>
                     <div id="manage-device-name" style="font-size:13px; font-weight:bold; margin:4px 0;">-</div>
-                    <button class="action-btn" onclick="resetDevice()" style="background:#1a1a1a; color:#fff; border:1px solid #333; padding:10px; margin-top:8px; font-size:11px;">RESET DEVICE</button>
+                    <button class="action-btn" onclick="resetDevice()" style="background:#1a1a1a; color:#fff; border:1px solid #333; padding:10px; margin-top:8px; font-size:11px;">RESET DEVICE LOCK</button>
                 </div>
                 <button class="action-btn" onclick="logout()" style="background:#3a1515; color:#ff6b6b; border:1px solid #522; font-size:12px; padding:12px;">LOG OUT</button>
             </div>
@@ -295,42 +212,13 @@ const htmlPage = `<!DOCTYPE html>
 
         function copyKeyText() {
             navigator.clipboard.writeText(currentKey);
-            alert("Key copied to clipboard!");
-        }
-
-        function openVpnApp() {
-            const subUrl = window.location.origin + "/sub/" + currentKey;
-            navigator.clipboard.writeText(subUrl).then(() => {
-                alert("Subscription link copied! Opening Happ Proxy Utility...");
-                window.location.href = "happ://import/" + encodeURIComponent(subUrl); 
-            }).catch(err => {
-                alert("Could not copy link automatically.");
-            });
-        }
-
-        function selectStyle(el) {
-            document.querySelectorAll('.style-btn').forEach(b => b.classList.remove('active'));
-            el.classList.add('active');
-        }
-
-        function updateAim(val) {
-            document.getElementById('aim-val').innerText = val + '%';
-        }
-
-        function updateAngle(val) {
-            document.getElementById('angle-val').innerText = val + '°';
-        }
-
-        function setAngle(el, val) {
-            document.querySelectorAll('.angle-btn').forEach(b => b.classList.remove('active'));
-            el.classList.add('active');
-            document.getElementById('angle-val').innerText = val + '°';
+            alert("Key copied!");
         }
 
         async function handleLogin(e) {
             e.preventDefault();
             const key = document.getElementById('key-input').value.trim();
-            const deviceInfo = navigator.userAgent.includes("Android") ? "Android Device" : "PC / Web";
+            const deviceInfo = navigator.userAgent;
             
             const res = await fetch('/api/verify', {
                 method: 'POST',
@@ -342,7 +230,12 @@ const htmlPage = `<!DOCTYPE html>
             if(data.success) {
                 currentKey = key;
                 expiryTimeMs = new Date(data.rawExpiry).getTime();
-                loadDashboardData(data);
+                
+                document.getElementById('display-key').innerText = data.key;
+                document.getElementById('info-activated').innerText = data.activated || '-';
+                document.getElementById('info-expires').innerText = data.expires || '-';
+                document.getElementById('info-device').innerText = data.device || 'Android';
+                document.getElementById('manage-device-name').innerText = data.device || 'Android';
                 
                 document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
                 document.getElementById('home-screen').classList.add('active');
@@ -353,14 +246,6 @@ const htmlPage = `<!DOCTYPE html>
             } else {
                 document.getElementById('login-error').innerText = data.message;
             }
-        }
-
-        function loadDashboardData(data) {
-            document.getElementById('display-key').innerText = data.key;
-            document.getElementById('info-activated').innerText = data.activated || '-';
-            document.getElementById('info-expires').innerText = data.expires || '-';
-            document.getElementById('info-device').innerText = data.device || 'Connected';
-            document.getElementById('manage-device-name').innerText = data.device || 'Connected';
         }
 
         function startCountdown() {
@@ -380,14 +265,7 @@ const htmlPage = `<!DOCTYPE html>
                 const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
                 const seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
-                let timeStr = "";
-                if (days > 0) {
-                    timeStr = days + "D " + hours + "H";
-                } else if (hours > 0) {
-                    timeStr = hours + "H " + minutes + "M";
-                } else {
-                    timeStr = minutes + "M " + seconds + "S";
-                }
+                let timeStr = days > 0 ? \`\${days}D \${hours}H\` : \`\${hours}H \${minutes}M \${seconds}S\`;
                 document.getElementById('time-left-display').innerText = timeStr;
             }, 1000);
         }
@@ -395,16 +273,10 @@ const htmlPage = `<!DOCTYPE html>
         function switchTab(tabName, element) {
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-            if(tabName === 'home') {
-                document.getElementById('home-screen').classList.add('active');
-                document.getElementById('page-title').innerText = "HOME";
-            } else if(tabName === 'features') {
-                document.getElementById('features-screen').classList.add('active');
-                document.getElementById('page-title').innerText = "FEATURES";
-            } else if(tabName === 'manage') {
-                document.getElementById('manage-screen').classList.add('active');
-                document.getElementById('page-title').innerText = "MANAGE";
-            }
+            if(tabName === 'home') document.getElementById('home-screen').classList.add('active');
+            else if(tabName === 'features') document.getElementById('features-screen').classList.add('active');
+            else if(tabName === 'manage') document.getElementById('manage-screen').classList.add('active');
+            document.getElementById('page-title').innerText = tabName.toUpperCase();
             element.classList.add('active');
         }
 
@@ -429,17 +301,15 @@ const htmlPage = `<!DOCTYPE html>
         }
     </script>
 </body>
-</html>`;
-
-const adminPage = `<!DOCTYPE html>
+</html>`;const adminPage = `<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard - Drake</title>
+    <title>Admin Dashboard - Drake Panel</title>
     <style>
         body { background: #0c0c0c; color: #fff; font-family: monospace; padding: 20px; }
-        .container { max-width: 600px; margin: 0 auto; background: #141414; border: 1px solid #262626; padding: 20px; }
+        .container { max-width: 650px; margin: 0 auto; background: #141414; border: 1px solid #262626; padding: 20px; }
         h2 { margin-bottom: 20px; font-size: 18px; letter-spacing: 2px; }
         input, select { background: #0c0c0c; border: 1px solid #333; color: #fff; padding: 10px; width: 100%; margin-bottom: 15px; }
         button { background: #fff; color: #000; border: none; padding: 12px; font-weight: bold; width: 100%; cursor: pointer; }
@@ -451,62 +321,60 @@ const adminPage = `<!DOCTYPE html>
 </head>
 <body>
     <div class="container">
-        <a href="/" class="back-link">← Back to Panel</a>
-        <h2>DRAKE ADMIN KEY GENERATOR</h2>
+        <a href="/" class="back-link">← Back to User Panel</a>
+        <h2>DRAKE ADMIN - FREE FIRE KEYS</h2>
         <form action="/admin/generate" method="POST">
             <label>Duration Value:</label>
-            <input type="number" step="0.1" name="duration" value="2" required>
+            <input type="number" step="0.1" name="duration" value="24" required>
             
             <label>Duration Type:</label>
             <select name="type">
                 <option value="hours" selected>Hours</option>
                 <option value="days">Days</option>
             </select>
-
-            <label>Count:</label>
+            
+            <label>Generate Count:</label>
             <input type="number" name="count" value="1" min="1" max="50" required>
             
             <button type="submit">GENERATE KEYS</button>
         </form>
-        <h3 style="margin-top:25px; font-size:14px;">Existing Keys Database</h3>
+        <h3 style="margin-top:25px; font-size:14px;">Existing Database Keys</h3>
         <table>
-            <tr><th>Key</th><th>Duration</th><th>Status</th><th>Device</th></tr>
+            <tr><th>Key Code</th><th>Duration</th><th>Status</th><th>Device Lock</th></tr>
             {{KEY_LIST}}
         </table>
     </div>
 </body>
 </html>`;
+
 app.get('/', (req, res) => { res.send(htmlPage); });
 
-// Subscription route for Happ app import with VLESS real config
-app.get('/sub/:key', (req, res) => {
-  const { key } = req.params;
-  const keyRow = db.prepare('SELECT * FROM keys WHERE key_code = ?').get(key);
-
-  if (!keyRow || keyRow.status !== 'active') {
-    return res.status(403).send('Invalid or expired key');
-  }
-
-  const uuid = key; 
-  const serverIp = req.hostname || '127.0.0.1';
-  const domain = req.hostname || 'yourdomain.com';
-
-  const proxyConfig = `vless://${uuid}@${serverIp}:443?encryption=none&security=tls&sni=${domain}&type=ws&host=${domain}&path=%2Fvless#Drake-Key-${key}`;
-  const encodedConfig = Buffer.from(proxyConfig).toString('base64');
-  
-  res.send(encodedConfig);
-});
-
+// Secure API Endpoint for Free Fire Mod / App Verification
 app.post('/api/verify', (req, res) => {
   const { key, deviceInfo } = req.body;
+  if (!key) {
+    return res.json({ success: false, message: 'Access key is missing!' });
+  }
+
   const keyRow = db.prepare('SELECT * FROM keys WHERE key_code = ?').get(key);
-  if (!keyRow) { return res.json({ success: false, message: 'Invalid access key!' }); }
+  if (!keyRow) { 
+    return res.json({ success: false, message: 'Invalid access key!' }); 
+  }
 
   const now = new Date();
   let activated = keyRow.activated_date;
   let expires = keyRow.expiry_date;
 
-  if (keyRow.status === 'unused') {
+  // Strict Device Binding (HWID Check)
+  if (keyRow.status === 'active') {
+    if (keyRow.device_info && keyRow.device_info !== deviceInfo) {
+      return res.json({ success: false, message: 'Key is already locked to another device!' });
+    }
+    if (new Date(expires) < now) { 
+      return res.json({ success: false, message: 'Key has expired!' }); 
+    }
+  } 
+  else if (keyRow.status === 'unused') {
     const expiryDate = new Date();
     if (keyRow.duration_type === 'hours') {
       expiryDate.setTime(now.getTime() + (keyRow.duration_value * 60 * 60 * 1000));
@@ -517,24 +385,25 @@ app.post('/api/verify', (req, res) => {
     activated = now.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
     expires = expiryDate.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
 
-    db.prepare(`UPDATE keys SET status = 'active', activated_date = ?, expiry_date = ?, device_info = ? WHERE key_code = ?`).run(activated, expires, deviceInfo, key);
-  } else {
-    if (new Date(expires) < now) { 
-      return res.json({ success: false, message: 'Key has expired!' }); 
-    }
+    db.prepare(`
+      UPDATE keys 
+      SET status = 'active', activated_date = ?, expiry_date = ?, device_info = ? 
+      WHERE key_code = ?
+    `).run(activated, expires, deviceInfo || 'FreeFire-Android', key);
   }
 
   const updatedRow = db.prepare('SELECT * FROM keys WHERE key_code = ?').get(key);
 
   let rawExpiryDate = new Date();
   if (updatedRow.duration_type === 'hours') {
-    rawExpiryDate = new Date(new Date().getTime() + (updatedRow.duration_value * 60 * 60 * 1000));
+    rawExpiryDate = new Date(now.getTime() + (updatedRow.duration_value * 60 * 60 * 1000));
   } else {
-    rawExpiryDate = new Date(new Date().getTime() + (updatedRow.duration_value * 24 * 60 * 60 * 1000));
+    rawExpiryDate = new Date(now.getTime() + (updatedRow.duration_value * 24 * 60 * 60 * 1000));
   }
 
   res.json({
     success: true,
+    message: 'Login Successful!',
     key: updatedRow.key_code,
     activated: updatedRow.activated_date,
     expires: updatedRow.expiry_date,
@@ -548,6 +417,8 @@ app.post('/api/reset-device', (req, res) => {
   db.prepare('UPDATE keys SET status = "unused", activated_date = NULL, expiry_date = NULL, device_info = NULL WHERE key_code = ?').run(key);
   res.json({ success: true });
 });
+
+// Admin Panel Routes
 app.get('/admin', (req, res) => {
   if (!req.session.isAdmin) {
     return res.send(`<!DOCTYPE html><html><head><title>Admin Login</title><style>body{background:#0c0c0c;color:#fff;font-family:monospace;display:flex;justify-content:center;align-items:center;height:100vh;} .box{background:#141414;padding:20px;border:1px solid #262626;width:300px;} input{width:100%;padding:10px;margin-bottom:10px;background:#0c0c0c;border:1px solid #333;color:#fff;} button{width:100%;padding:10px;background:#fff;border:none;font-weight:bold;cursor:pointer;}</style></head><body><div class="box"><h2>DRAKE ADMIN LOGIN</h2><form method="POST" action="/admin/login"><input type="text" name="username" placeholder="Username" required><input type="password" name="password" placeholder="Password" required><button type="submit">LOGIN</button></form></div></body></html>`);
@@ -559,8 +430,7 @@ app.get('/admin', (req, res) => {
 
 app.post('/admin/login', (req, res) => {
   const { username, password } = req.body;
-  const admin = db.prepare('SELECT * FROM admins WHERE username = ? AND password = ?').get(username, password);
-  if (admin) {
+  if (username === 'admin' && password === 'admin123') {
     req.session.isAdmin = true;
     res.redirect('/admin');
   } else {
