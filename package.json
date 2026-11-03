@@ -1,13 +1,13 @@
 {
   "name": "my-render-app",
   "version": "1.0.0",
-  "description": "App deployed on Render",
   "main": "src/index.js",
   "scripts": {
     "start": "node src/index.js"
   },
   "dependencies": {
-    "express": "^4.19.2"
+    "express": "^4.19.2",
+    "express-session": "^1.18.0"
   },
   "engines": {
     "node": ">=18.0.0"
