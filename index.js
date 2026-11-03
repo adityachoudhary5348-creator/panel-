@@ -40,7 +40,8 @@ app.use(session({
   resave: false,
   saveUninitialized: false,
   cookie: { secure: false }
-}));const htmlPage = `<!DOCTYPE html>
+}));
+const htmlPage = `<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -301,7 +302,8 @@ app.use(session({
         }
     </script>
 </body>
-</html>`;const adminPage = `<!DOCTYPE html>
+</html>`;
+const adminPage = `<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -349,7 +351,6 @@ app.use(session({
 
 app.get('/', (req, res) => { res.send(htmlPage); });
 
-// Secure API Endpoint for Free Fire Mod / App Verification
 app.post('/api/verify', (req, res) => {
   const { key, deviceInfo } = req.body;
   if (!key) {
@@ -365,7 +366,6 @@ app.post('/api/verify', (req, res) => {
   let activated = keyRow.activated_date;
   let expires = keyRow.expiry_date;
 
-  // Strict Device Binding (HWID Check)
   if (keyRow.status === 'active') {
     if (keyRow.device_info && keyRow.device_info !== deviceInfo) {
       return res.json({ success: false, message: 'Key is already locked to another device!' });
@@ -418,7 +418,6 @@ app.post('/api/reset-device', (req, res) => {
   res.json({ success: true });
 });
 
-// Admin Panel Routes
 app.get('/admin', (req, res) => {
   if (!req.session.isAdmin) {
     return res.send(`<!DOCTYPE html><html><head><title>Admin Login</title><style>body{background:#0c0c0c;color:#fff;font-family:monospace;display:flex;justify-content:center;align-items:center;height:100vh;} .box{background:#141414;padding:20px;border:1px solid #262626;width:300px;} input{width:100%;padding:10px;margin-bottom:10px;background:#0c0c0c;border:1px solid #333;color:#fff;} button{width:100%;padding:10px;background:#fff;border:none;font-weight:bold;cursor:pointer;}</style></head><body><div class="box"><h2>DRAKE ADMIN LOGIN</h2><form method="POST" action="/admin/login"><input type="text" name="username" placeholder="Username" required><input type="password" name="password" placeholder="Password" required><button type="submit">LOGIN</button></form></div></body></html>`);
