@@ -1,14 +1,12 @@
 {
-  "name": "drake-panel",
+  "name": "drake-dashboard",
   "version": "1.0.0",
+  "description": "Subscription web dashboard with license key verification",
   "main": "index.js",
   "scripts": {
     "start": "node index.js"
   },
   "dependencies": {
-    "express": "^4.19.2",
-    "express-session": "^1.18.0",
-    "helmet": "^7.1.0",
-    "sqlite3": "^5.1.7"
+    "better-sqlite3": "^9.4.3"
   }
 }
